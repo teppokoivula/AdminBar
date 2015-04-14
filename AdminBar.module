@@ -13,7 +13,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
 			'title' => 'Admin Bar',
 			'summary' => 'Fast and easy in-page content editing',
 			'href' => 'http://processwire.com/talk/index.php/topic,56.0.html',
-			'version' => 102,
+			'version' => 103,
 			'permanent' => false,
 			'autoload' => true,
 			'singular' => true,
@@ -211,8 +211,7 @@ OUT;
 		// ...and if only one template is allowed, we show it's name instead of default "page"
 		if(count($page->template->childTemplates) == 1) {
 			$childTemplates = $page->template->childTemplates;
-			$templateTitle = $this->templates->get(reset($childTemplates))->label;
-
+			$templateTitle = $this->templates->get(reset($childTemplates))->get("label" . ($this->user->language->isDefault() ? '' : $this->user->language));
 		}
 
 		// Here we create markup needed by AdminBar.
