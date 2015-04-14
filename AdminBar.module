@@ -14,7 +14,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
 			'title' => 'Admin Bar',
 			'summary' => 'Fast and easy in-page content editing',
 			'href' => 'http://processwire.com/talk/index.php/topic,56.0.html',
-			'version' => 104,
+			'version' => 105,
 			'permanent' => false,
 			'autoload' => true,
 			'singular' => true,
@@ -98,7 +98,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
 	 */
 	public function ready() {
 
-		if ($this->user->isGuest() || !$this->user->hasPermission($this>ab_permission)) return false;
+		if ($this->user->isGuest() || !$this->user->hasPermission($this->ab_permission)) return false;
 		if ($this->page && $this->page->template == "admin" && !$this->input->get->ab_modal && !$this->session->AB_pageSaved) return false;
 
 		$this->pages->addHookAfter('save', $this, 'pageSave');
