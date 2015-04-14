@@ -13,7 +13,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
 			'title' => 'Admin Bar',
 			'summary' => 'Fast and easy in-page content editing',
 			'href' => 'http://processwire.com/talk/index.php/topic,56.0.html',
-			'version' => 101,
+			'version' => 102,
 			'permanent' => false,
 			'autoload' => true,
 			'singular' => true,
@@ -52,6 +52,12 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
 	}
 
 	/**
+	 * Permission required by our module
+	 *
+	 */
+	protected $ab_permission;
+
+	/**
 	 * Initialize the module and setup hooks
 	 *
 	 * The init method of a module is called right after ProcessWire is bootstrapped, when all
@@ -74,14 +80,29 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
 
 		if ($this->user->isGuest()) return false;
 
-		$ab_permission = $this->permissions->get('adminbar');
-		if(!$this->user->hasPermission($ab_permission)) return false;
+		$this->ab_permission = $this->permissions->get('adminbar');
+		if(!$this->user->hasPermission($this->ab_permission)) return false;
+
+		// hook before forms are rendered, so that we can modify the form's "action" attribute
+		if ($this->input->get->ab_modal) {
+			$this->addHookBefore('InputfieldForm::render', $this, 'formRender');
+		}
+	}
+
+	/**
+	 * Setup rest of the hooks
+	 *
+	 * Some hooks have to be defined here, since we need access to $page var.
+	 *
+	 */
+	public function ready() {
+
+		if ($this->user->isGuest() || ($this->page && $this->page->template == "admin" && !$this->input->get->ab_modal && !$this->session->AB_pageSaved)) return false;
+
+		if(!$this->user->hasPermission($this->ab_permission)) return false;
 
 		$this->pages->addHookAfter('save', $this, 'pageSave');
 		$this->addHookAfter('Page::render', $this, "pageRender");
-
-		// hook before forms are rendered, so that we can modify the form's "action" attribute
-		$this->addHookBefore('InputfieldForm::render', $this, 'formRender');
 
 		// hook before a redirect occurs, os we can modify the redirect URL
 		$this->session->addHookBefore('redirect', $this, 'sessionRedirect');
@@ -179,7 +200,7 @@ OUT;
 		// it in modal (js) and modalGet to show modal version of admin
 		if ($this->showModal) {
 			$modalClass = 'modal';
-			$modalGet = '&modal=1';
+			$modalGet = '&modal=1&ab_modal=1';
 		} else {
 			$modalClass = '';
 			$modalGet = '';
@@ -268,22 +289,23 @@ OUT;
 		if(!$this->input->get->modal) return;
 		$form = $event->object;
 		$action = $form->attr('action');
-		$action .= (strpos($action, '?') !== false ? '&' : '?') . "modal=1";
+		$action .= (strpos($action, '?') !== false ? '&' : '?') . "modal=1&ab_modal=1";
 		$form->attr('action', $action);
 	}
 
    /**
 	 * Hook to take place right before a redirect occurs
 	 *
-	 * We intercept the redirect URL and modify it to add 'modal=1' to the query string
+	 * We intercept the redirect URL and modify it to add 'modal=1&ab_modal=1'
+	 * to the query string.
 	 *
 	 */
 	public function sessionRedirect($event) {
 		if(!$this->page || $this->page->template != 'admin') return;
 		if(!$this->input->get->modal) return;
 		$url = $event->arguments(0);
-		if(preg_match('/[?&]modal=/', $url)) return;
-		$url .= (count($this->input->get) ? '&' : '?') . "modal=1";
+		if(preg_match('/[?&]ab_modal=/', $url)) return;
+		$url .= (count($this->input->get) ? '&' : '?') . "modal=1&ab_modal=1";
 		$event->arguments(0, $url);
 	}
 
