@@ -3,7 +3,7 @@
 /**
  * AdminBar module for ProcessWire CMS/CMF
  *
- * @copyright 20113-2019 @apeisa & Teppo Koivula
+ * @copyright 2011-2019 @apeisa & Teppo Koivula
  * @license http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License, version 2
  */
 class AdminBar extends WireData implements Module, ConfigurableModule {
