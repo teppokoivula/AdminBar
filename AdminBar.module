@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * AdminBar module for ProcessWire CMS/CMF
+ *
+ * @copyright 20113-2019 @apeisa & Teppo Koivula
+ * @license http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License, version 2
+ */
 class AdminBar extends WireData implements Module, ConfigurableModule {
 
 	/**
@@ -14,7 +20,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
 			'title' => 'Admin Bar',
 			'summary' => 'Fast and easy in-page content editing',
 			'href' => 'http://processwire.com/talk/index.php/topic,56.0.html',
-			'version' => 106,
+			'version' => '1.0.7',
 			'permanent' => false,
 			'autoload' => true,
 			'singular' => true,
