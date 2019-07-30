@@ -1,4 +1,4 @@
-<?php
+<?php namespace ProcessWire;
 
 /**
  * AdminBar module for ProcessWire CMS/CMF
@@ -10,153 +10,121 @@
  */
 class AdminBar extends WireData implements Module, ConfigurableModule {
 
-	/**
-	 * Basic information for this module
-	 *
-	 * See /wire/core/Module.php for more details.
-	 * 
-	 * @return array
-	 */
-	public static function getModuleInfo() {
-		return array(
-			'title' => 'Admin Bar',
-			'summary' => 'Fast and easy in-page content editing',
-			'href' => 'http://modules.processwire.com/modules/admin-bar/',
-			'version' => '1.1.1',
-			'permanent' => false,
-			'autoload' => true,
-			'singular' => true,
-		);
-	}
+    /**
+     * Basic information for this module
+     *
+     * See /wire/core/Module.php for more details.
+     *
+     * @return array
+     */
+    public static function getModuleInfo(): array {
+        return [
+            'title' => 'Admin Bar',
+            'summary' => 'Fast and easy in-page content editing',
+            'href' => 'http://modules.processwire.com/modules/admin-bar/',
+            'version' => '2.0.0',
+            'permanent' => false,
+            'autoload' => true,
+            'singular' => true,
+        ];
+    }
 
-	/**
-	 * Default configuration for our module
-	 *
-	 * @return array
-	 */
-	static public function getDefaultData() {
-		return array(
-			'showModal' => 1,
-		);
-	}
+    /**
+     * Default configuration for our module
+     *
+     * @return array
+     */
+    static public function getDefaultData(): array {
+        return [
+            'showModal' => 1,
+            'theme' => 'default',
+        ];
+    }
 
-	/**
-	 * Populate the default config data
-	 *
-	 * ProcessWire will automatically overwrite it with anything the user has specifically configured.
-	 * This is done in construct() rather than init() because ProcessWire populates config data after
-	 * construct(), but before init().
-	 *
-	 */
-	public function __construct() {
-		foreach (self::getDefaultData() as $key => $value) {
-			$this->$key = $value;
-		}
-	}
+    /**
+     * Populate the default config data
+     *
+     * ProcessWire will automatically overwrite it with anything the user has specifically configured.
+     * This is done in construct() rather than init() because ProcessWire populates config data after
+     * construct(), but before init().
+     */
+    public function __construct() {
+        foreach (self::getDefaultData() as $key => $value) {
+            $this->$key = $value;
+        }
+    }
 
-	/**
-	 * Permission required by our module
-	 *
-	 */
-	protected $ab_permission;
+    /**
+     * Permission required by our module
+     *
+     * @var Permission
+     */
+    protected $ab_permission;
 
-	/**
-	 * Initialize the module and setup hooks
-	 *
-	 * The init method of a module is called right after ProcessWire is bootstrapped, when all
-	 * API vars are ready. Whereas the __construct() is called DURING bootstrap, so the init()
-	 * method is a better place to attach hooks to API vars.
-	 *
-	 * In this method, we'll use an 'after' hook since we want to modify the output of the
-	 * rendered page template.
-	 *
-	 * Note also that the 'Class::method' syntax means it hooks into ALL Page instances.
-	 * The syntax for hooking to a single instance would be:
-	 * $page->addHookAfter('render', $this, 'pageRender');
-	 *
-	 * Also note that there isn't actually a Page::render method, it was instead added by
-	 * another module (wire/modules/PageRender.module). Not that it matters here, but just
-	 * wanted to mention in case you look in the Page class and don't see a render method.
-	 *
-	 */
-	public function init() {
+    /**
+     * Initialize the module and setup hooks
+     *
+     * @return false|void
+     */
+    public function init() {
 
-		if ($this->user->isGuest() || !$this->input->get->ab_modal) return false;
+        if ($this->user->isGuest() || !$this->input->get->ab_modal) return false;
 
-		$this->ab_permission = $this->permissions->get('adminbar');
-		if (!$this->user->hasPermission($this->ab_permission)) return false;
+        $this->ab_permission = $this->permissions->get('adminbar');
+        if (!$this->user->hasPermission($this->ab_permission)) return false;
 
-		// hook before forms are rendered, so that we can modify the form's "action" attribute
-		$this->addHookBefore('InputfieldForm::render', $this, 'formRender');
+        // hook before forms are rendered, so that we can modify the form's "action" attribute
+        $this->addHookBefore('InputfieldForm::render', $this, 'formRender');
+    }
 
-	}
+    /**
+     * Setup rest of the hooks
+     *
+     * Some hooks have to be defined here, since we need access to $page var.
+     *
+     * @return false|void
+     */
+    public function ready() {
 
-	/**
-	 * Setup rest of the hooks
-	 *
-	 * Some hooks have to be defined here, since we need access to $page var.
-	 *
-	 */
-	public function ready() {
+        if ($this->user->isGuest() || !$this->user->hasPermission($this->ab_permission)) return false;
+        if ($this->page && $this->page->template == "admin" && !$this->input->get->ab_modal && !$this->session->AB_pageSaved) return false;
 
-		if ($this->user->isGuest() || !$this->user->hasPermission($this->ab_permission)) return false;
-		if ($this->page && $this->page->template == "admin" && !$this->input->get->ab_modal && !$this->session->AB_pageSaved) return false;
+        $this->pages->addHookAfter('save', $this, 'pageSave');
+        $this->addHookAfter('Page::render', $this, "pageRender");
 
-		$this->pages->addHookAfter('save', $this, 'pageSave');
-		$this->addHookAfter('Page::render', $this, "pageRender");
+        // hook before a redirect occurs, os we can modify the redirect URL
+        $this->session->addHookBefore('redirect', $this, 'sessionRedirect');
+    }
 
-		// hook before a redirect occurs, os we can modify the redirect URL
-		$this->session->addHookBefore('redirect', $this, 'sessionRedirect');
-		
-	}
+    /**
+     * Hook called when a page is rendered
+     *
+     * @param HookEvent $event
+     */
+    public function pageRender(HookEvent $event) {
 
-	/**
-	 * Hook called when a page is rendered
-	 *
-	 * The method name used here does not matter, it just has to be consistent with the name you provided
-	 * when creating the hook.
-	 *
-	 * This method is given an $event object of type HookEvent. To see what's in that, see this file:
-	 * /wire/core/HookEvent.php (it's very short and simple)
-	 * 
-	 * @param HookEvent $event
-	 */
-	public function pageRender(HookEvent $event) {
+        $page = $event->object;
+        if ($page->template == "form-builder") return;
 
-		$l = new stdClass();
-		$l->browse = $this->_("Browse");
-		$l->edit = $this->_("Edit");
-		$l->new = $this->_("New");
-		$l->logout = $this->_("Logout");
-		$l->admin = $this->_("Admin");
-		$l->locked = $this->_("This page is locked.");
-		$l->norights = $this->_("No editing rights.");
+        if ($this->session->AB_pageSaved && $page->template == 'admin' && $this->input->get->modal) {
+            // If we've saved a page and we're currently viewing an admin page in modal window,
+            // make a JS redirect and break out of modal (there seems to be no other way than JS)
+            $redirect_url = rtrim($this->config->urls->root, '/') . $this->session->AB_pageSaved;
+            die('<script>top.location.href = "' . $redirect_url . '";</script>');
+        }
+        elseif ($page->template == 'admin') {
+            // If we are in admin, we want to delete our session var
+            $this->session->remove('AB_pageSaved');
+        }
 
-		// $event->object always has the object instance that resulted in this call
-		$page = $event->object;
-		
-		if ($page->template == "form-builder") return;
+        // We need this in case page is deleted through admin bar - we want to redirect to it's parent after that
+        if ($page->template != 'admin') {
+            $this->session->AB_parentPage = $page->parent->path;
+        }
 
-		// If we have saved page, admin page and in modal,
-		// then we make js-redirect and break out of modal (there seems to be no other way than js)
-		if ($this->session->AB_pageSaved && $page->template == 'admin' && $this->input->get->modal) {
-			$redirect_url = rtrim($this->config->urls->root, '/') . $this->session->AB_pageSaved;
-			echo "<script>top.location.href = '" . $redirect_url . "';</script>";
-			die();
-		}
-		// If we are in admin, we want to delete our session var
-		elseif ($page->template == 'admin') {
-			$this->session->remove('AB_pageSaved');
-		}
-
-		// We need this in case page is deleted through admin bar - we want to redirect to it's parent after that
-		if (!($page->template == 'admin')) {
-			$this->session->AB_parentPage = $page->parent->path;
-		}
-
-		// We want to remove "view" and "children" buttons from modal admin view
-		if ($page->template == 'admin' && $this->input->get->modal) {
-			$out = <<<OUT
+        // We want to remove "view" and "children" buttons from modal admin view
+        if ($page->template == 'admin' && $this->input->get->modal) {
+            $out = <<<OUT
 <script>
 ['_ProcessPageEditView', '_ProcessPageEditChildren'].forEach(function(remove_id) {
     const remove_tab = document.getElementById(remove_id);
@@ -165,198 +133,217 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
 const wrap_template = document.getElementById('wrap_template');
 if (wrap_template) wrap_template.style.display = 'none';
 </script>
-</body>
 OUT;
-			$event->return = str_ireplace('</body>', $out, $event->return);
-		}
+            $event->return = str_ireplace('</body>', $out . '</body>', $event->return);
+        }
 
-		// if page is using the admin template, abort.
-		if ($page->template == 'admin') return;
+        // if page is using the admin template, abort.
+        if ($page->template == 'admin') return;
 
-		// find the location of this module for linking css and js files
-		$url = $this->config->urls->AdminBar . "AdminBar";
-		$info = self::getModuleInfo();
+        // find the location of this module for linking CSS and JS files
+        $module_path = $this->config->paths->get('AdminBar');
+        $module_url = $this->config->urls->get('AdminBar');
+        $version = self::getModuleInfo()['version'];
 
-		$out = '<link rel="stylesheet" type="text/css" href="' . $url . '.css?v=' . $info['version'] . '">';
+        // add CSS files to output
+        foreach (['AdminBar.css', 'themes/' . basename($this->theme) . '/theme.css'] as $file) {
+            if (is_file($module_path . $file)) {
+                $out .= '<link rel="stylesheet" href="' . $module_url . $file . '?v=' . $version . '">';
+            }
+        }
 
-		// Allows to customize css without touching module files or adding own files in templates
-		if (is_file($this->config->paths->AdminBar . "AdminBarCustom.css")){
-			$out .= '<link rel="stylesheet" type="text/css" href="' . $url . 'Custom.css">';
-		}
+        // add JS files to output
+        foreach (['AdminBar.js', 'themes/' . basename($this->theme) . '/theme.js'] as $file) {
+            if (is_file($module_path . $file)) {
+                $out .= '<script type="text/javascript" src="' . $module_url . $file . '?v=' . $version . '"></script>';
+            }
+        }
 
-		// the css and js links we're going to add
-		$out .= '<script type="text/javascript" src="' . $url . '.js?v=' . $info['version'] . '"></script>'
-		      . '</body>';
+        // modify the value returned by $page->render() to include our css and js files
+        $event->return = str_ireplace('</body>', $out . '</body>', $event->return);
 
-		// modify the value returned by $page->render() to include our css and js files
-		$event->return = str_ireplace('</body>', $out, $event->return);
+        // If settings for showModal is checked, then we need modalClass to open
+        // it in modal (js) and modalGet to show modal version of admin
+        if ($this->showModal) {
+            $modalClass = 'modal';
+            $modalGet = '&modal=1&ab_modal=1';
+        } else {
+            $modalClass = '';
+            $modalGet = '';
+        }
 
-		// If settings for showModal is checked, then we need modalClass to open
-		// it in modal (js) and modalGet to show modal version of admin
-		if ($this->showModal) {
-			$modalClass = 'modal';
-			$modalGet = '&modal=1&ab_modal=1';
-		} else {
-			$modalClass = '';
-			$modalGet = '';
-		}
+        $templateTitle = ""; // Default text to show when adding new pages.
 
-		$templateTitle = ""; // Default text to show when adding new pages.
+        // ...and if only one template is allowed, we show it's name instead of default "page"
+        if (count($page->template->childTemplates) == 1) {
+            $childTemplate = array_pop((array_values($page->template->childTemplates)));
+            $labelLanguage = $this->modules->isInstalled("LanguageSupport") && !$this->user->language->isDefault() ? $this->user->language : '';
+            $templateTitle = $this->templates->get($childTemplate)->get("label" . ($labelLanguage ? $labelLanguage . "|label" : "") . "|name");
+        }
 
-		// ...and if only one template is allowed, we show it's name instead of default "page"
-		if (count($page->template->childTemplates) == 1) {
-			$childTemplate = array_pop((array_values($page->template->childTemplates)));
-			$labelLanguage = $this->modules->isInstalled("LanguageSupport") && !$this->user->language->isDefault() ? $this->user->language : '';
-			$templateTitle = $this->templates->get($childTemplate)->get("label" . ($labelLanguage ? $labelLanguage . "|label" : "") . "|name");
-		}
+        // Here we create markup needed by AdminBar.
+        $strings = [
+            'browse' => $this->_("Browse"),
+            'edit' => $this->_("Edit"),
+            'new' => $this->_("New"),
+            'logout' => $this->_("Logout"),
+            'admin' => $this->_("Admin"),
+            'locked' => $this->_("This page is locked."),
+            'norights' => $this->_("No editing rights."),
+        ];
 
-		// Here we create markup needed by AdminBar.
-		$out  = <<<OUT
-	<ul id='adminbar'>
-		<li class='browse active'><a href='#'>{$l->browse}</a></li>
-OUT;
-		
-		if ($page->editable() && !$page->is(Page::statusLocked)) {
-			$out .= "<li class='edit'><a href='{$this->config->urls->admin}page/edit/?id={$this->page->id}{$modalGet}' class='{$modalClass} edit'>{$l->edit}</a></li>";
-		} else {
-			if (!$page->editable()) {
-				$out .= "<li class='permissions'><span>{$l->norights}</span></li>";
-			} else if ($page->is(Page::statusLocked)) {
-				$out .= "<li class='permissions'><span>{$l->locked}</span></li>";
-			}
-		}
-		
-		if ($page->addable()) {
-			$out .= "<li class='add-page'><a href='{$this->config->urls->admin}page/add/?parent_id={$this->page->id}{$modalGet}' class='{$modalClass} add'>{$l->new} {$templateTitle}</a></li>";
-		}
-		
-		$out .= <<<OUT
-		<li class='admin'><a href='{$this->config->urls->admin}login/logout/'>{$l->logout}</a> <a href='{$this->config->urls->admin}page/?open={$this->page->id}' class='pages'>{$l->admin}</a></li>
-	</ul>
-OUT;
-		
-		// Saved page through modal, we notify the user that page was saved
-		if ($this->session->AB_pageSaved) {
-			if ($this->session->AB_pageRemove) {
-				$removed = sprintf($this->_("%s moved to the trash."), $this->session->AB_pageRemove);
-				$out .= "<div id='ab-pagesaved-cont'><div id='ab-pagesaved'>$removed</div></div>";
-			} else {
-				$saved = sprintf($this->_("%s saved succesfully."), $page->title);
-				$out .= "<div id='ab-pagesaved-cont'><div id='ab-pagesaved'>$saved</div></div>";
-			}
-			$this->session->remove('AB_pageSaved');
-			$this->session->remove('AB_pageRemove');
-		} else {
-			$this->session->remove('AB_pageSaved');
-			$this->session->remove('AB_pageRemove');
-		}
-		$out .= "\n</body>";
+        $out  = '<ul id="adminbar">'
+              . '<li class="browse active"><a href="#">' . $strings['browse'] . '</a></li>';
 
-		// And finally we add AdminBar markup to end of the page source
-		$event->return = str_ireplace('</body>', $out, $event->return);
+        if ($page->editable() && !$page->is(Page::statusLocked)) {
+            $out .= '<li class="edit">'
+                  . '<a href="' . $this->config->urls->admin . 'page/edit/?id=' . $this->page->id . $modalGet . '" class="' . $modalClass . ' edit">' . $strings['edit'] . '</a>'
+                  . '</li>';
+        } else {
+            if (!$page->editable()) {
+                $out .= '<li class="permissions"><span>' . $strings['norights'] . '</span></li>';
+            } else if ($page->is(Page::statusLocked)) {
+                $out .= '<li class="permissions"><span>' . $strings['locked'] . '</span></li>';
+            }
+        }
 
-	}
+        if ($page->addable()) {
+            $out .= '<li class="add-page"><a href="' . $this->config->urls->admin . 'page/add/?parent_id=' . $this->page->id . $modalGet . '" class="' . $modalClass . ' add">' . $strings['new'] . ' ' . $templateTitle . '</a></li>';
+        }
 
-	/**
-	 * Hook to take place after page is saved (edit & new page)
-	 * 
-	 * @param HookEvent $event
-	 */
-	public function pageSave(HookEvent $event) {
-		$page = $event->arguments[0];
-		
-		// If creating new page, then we do not add AB_pageSaved session var (this also prevents redirect and keeps modal alive)
-		if (!$page->is(Page::statusUnpublished) && !strpos($page->path, "repeater")) {
-			$this->session->AB_pageSaved = "{$page->path}";
-		}
+        $out .= '<li class="admin"><a href="' . $this->config->urls->admin . 'login/logout/">' . $strings['logout'] . '</a> <a href="' . $this->config->urls->admin . 'page/?open=' . $this->page->id . '" class="pages">' . $strings['admin'] . '</a></li>'
+              . '</ul>';
 
-		if ($page->isTrash()) {
-			$this->session->AB_pageSaved = $this->session->AB_parentPage;
-			$this->session->AB_pageRemove = $page->title;
-		}
-	}
+        // Saved page through modal, we notify the user that page was saved
+        if ($this->session->AB_pageSaved) {
+            if ($this->session->AB_pageRemove) {
+                $removed = sprintf($this->_("%s moved to the trash."), $this->session->AB_pageRemove);
+                $out .= '<div id="ab-pagesaved-cont"><div id="ab-pagesaved">' . $removed . '</div></div>';
+            } else {
+                $saved = sprintf($this->_("%s saved succesfully."), $page->title);
+                $out .= '<div id="ab-pagesaved-cont"><div id="ab-pagesaved">' . $saved . '</div></div>';
+            }
+            $this->session->remove('AB_pageSaved');
+            $this->session->remove('AB_pageRemove');
+        } else {
+            $this->session->remove('AB_pageSaved');
+            $this->session->remove('AB_pageRemove');
+        }
 
-	/**
-	 * Hook to take place before forms are rendered
-	 *
-	 * We check if there is a 'modal' get var set, and if so, we add it to the form's action attribute
-	 * 
-	 * @param HookEvent $event
-	 */
-	public function formRender(HookEvent $event) {
-		if (!$this->input->get->modal) return;
-		$form = $event->object;
-		$action = $form->attr('action');
-		$action .= (strpos($action, '?') !== false ? '&' : '?') . "modal=1&ab_modal=1";
-		$form->attr('action', $action);
-	}
+        // And finally we add AdminBar markup to end of the page source
+        $event->return = str_ireplace('</body>', $out . '</body>', $event->return);
+    }
 
-	/**
-	 * Hook to take place right before a redirect occurs
-	 *
-	 * We intercept the redirect URL and modify it to add 'modal=1&ab_modal=1'
-	 * to the query string.
-	 * 
-	 * @param HookEvent $event
-	 */
-	public function sessionRedirect(HookEvent $event) {
-		if (!$this->page || $this->page->template != 'admin') return;
-		if (!$this->input->get->modal) return;
-		$url = $event->arguments(0);
-		if (preg_match('/[?&]ab_modal=/', $url)) return;
-		$url .= (!empty($this->input->get) ? '&' : '?') . "modal=1&ab_modal=1";
-		$event->arguments(0, $url);
-	}
+    /**
+     * Hook to take place after page is saved (edit & new page)
+     *
+     * @param HookEvent $event
+     */
+    public function pageSave(HookEvent $event) {
 
-	/**
-	 * Module configuration
-	 * 
-	 * @param array $data
-	 * @return InputfieldWrapper
-	 */
-	static public function getModuleConfigInputfields(array $data) {
+        $page = $event->arguments[0];
 
-		// this is a container for fields, basically like a fieldset
-		$fields = new InputfieldWrapper();
+        // If creating new page, then we do not add AB_pageSaved session var (this also prevents redirect and keeps modal alive)
+        if (!$page->is(Page::statusUnpublished) && !strpos($page->path, "repeater")) {
+            $this->session->AB_pageSaved = $page->path;
+        }
 
-		// since this is a static function, we can't use $this->modules, so get them from the global wire() function
-		$modules = wire('modules');
+        if ($page->isTrash()) {
+            $this->session->AB_pageSaved = $this->session->AB_parentPage;
+            $this->session->AB_pageRemove = $page->title;
+        }
+    }
 
-		// Populate $data with the default config, because if they've never configured this module before,
-		// the $data provided to this function will be empty. Or, if you add new config items in a new version,
-		// $data won't have it until they configure it. Best bet is to merge defaults with custom, where
-		// custom overwrites the defaults (array_merge).
-		$data = array_merge(self::getDefaultData(), $data);
+    /**
+     * Hook to take place before forms are rendered
+     *
+     * We check if there is a 'modal' get var set, and if so, we add it to the form's action attribute
+     *
+     * @param HookEvent $event
+     */
+    public function formRender(HookEvent $event) {
+        if (!$this->input->get->modal) return;
+        $form = $event->object;
+        $action = $form->attr('action');
+        $action .= (strpos($action, '?') !== false ? '&' : '?') . 'modal=1&ab_modal=1';
+        $form->attr('action', $action);
+    }
 
-		// showModal field
-		$field = $modules->get("InputfieldCheckbox");
-		$field->name = "showModal";
-		$field->label = "Use slide overlay";
-		$field->description = "Whether clicking edit buttons shows slide view (overlay/modal) or goes to traditional admin.";
-		$field->value = 1; // providing a "checked" value for the checkbox is necessary
-		$field->attr('checked', empty($data['showModal']) ? '' : 'checked');
-		$fields->add($field);
+    /**
+     * Hook to take place right before a redirect occurs
+     *
+     * We intercept the redirect URL and modify it to add 'modal=1&ab_modal=1' to the query string.
+     *
+     * @param HookEvent $event
+     */
+    public function sessionRedirect(HookEvent $event) {
+        if (!$this->page || $this->page->template != 'admin') return;
+        if (!$this->input->get->modal) return;
+        $url = $event->arguments(0);
+        if (preg_match('/[?&]ab_modal=/', $url)) return;
+        $url .= (!empty($this->input->get) ? '&' : '?') . 'modal=1&ab_modal=1';
+        $event->arguments(0, $url);
+    }
 
-		return $fields;
-	}
+    /**
+     * Module configuration
+     *
+     * @param array $data
+     * @return InputfieldWrapper
+     */
+    static public function getModuleConfigInputfields(array $data): InputfieldWrapper {
 
-	/**
-	 * Called only when this module is installed
-	 *
-	 */
-	public function ___install() {
-		$ab_permission = $this->permissions->add('adminbar');
-		$ab_permission->title = "Use AdminBar";
-		$ab_permission->save();
-	}
+        // this is a container for fields, basically like a fieldset
+        $fields = new InputfieldWrapper();
 
-	/**
-	 * Called only when this module is uninstalled
-	 *
-	 */
-	public function ___uninstall() {
-		$ab_permission = $this->permissions->get('adminbar');
-		if ($ab_permission->id) $this->permissions->delete($ab_permission);
-	}
+        // since this is a static function, we can't use $this->modules, so get them from the global wire() function
+        $modules = wire('modules');
+
+        // merge data array with defaults
+        $data = array_merge(self::getDefaultData(), $data);
+
+        // showModal field
+        $field = $modules->get('InputfieldCheckbox');
+        $field->name = 'showModal';
+        $field->label = 'Use slide overlay';
+        $field->description = 'Whether clicking edit buttons shows slide view (overlay/modal) or goes to traditional admin.';
+        $field->value = 1;
+        $field->attr('checked', empty($data['showModal']) ? '' : 'checked');
+        $fields->add($field);
+
+        // theme selection
+        $field = $modules->get('InputfieldSelect');
+        $field->name = 'theme';
+        $field->label = 'Theme';
+        $field->required = true;
+        $field->description = 'Choose a theme to use for your Admin Bar.';
+        $theme_directory = new \DirectoryIterator(__DIR__ . '/themes/');
+        foreach ($theme_directory as $theme) {
+            if ($theme->isDir() && strpos($theme->getFilename(), '.') !== 0) {
+                $field->addOption($theme->getFilename());
+            }
+        }
+        $field->value = $data['theme'];
+        $fields->add($field);
+
+        return $fields;
+    }
+
+    /**
+     * Called only when this module is installed
+     */
+    public function ___install() {
+        $ab_permission = $this->permissions->add('adminbar');
+        $ab_permission->title = 'Use AdminBar';
+        $ab_permission->save();
+    }
+
+    /**
+     * Called only when this module is uninstalled
+     */
+    public function ___uninstall() {
+        $ab_permission = $this->permissions->get('adminbar');
+        if ($ab_permission->id) $this->permissions->delete($ab_permission);
+    }
 
 }

@@ -1,0 +1,122 @@
+html {
+	padding-top: 40px;
+}
+
+#adminbar {
+	height: 40px;
+	margin: 0;
+	padding:0 0 0 60px;
+	background: url(processwire.svg) no-repeat 20px center #eee;
+	background-size: 24px;
+    border: 0;
+	box-shadow: 0px 3px 5px 0px rgba(0,0,0,0.20);
+}
+
+#adminbar li {
+	display: block;
+	float: left;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	height: 40px;
+	border-right: 1px solid #bbb;
+}
+
+#adminbar li a,
+#adminbar li span,
+#adminbar .admin .pages,
+#adminbar .admin a:first-child {
+	display: block;
+	float: left;
+	height: 40px;
+	line-height: 42px;
+	padding: 0 13px 0 39px;
+	font-family: arial, sans-serif;
+	color: #000;
+	opacity: .4;
+	text-decoration: none;
+	background-size: 16px !important;
+}
+
+#adminbar li a:hover {
+	text-decoration: none;
+	opacity: 1;
+	letter-spacing: 0;
+}
+
+#adminbar li.admin:hover {
+	text-decoration: none;
+	opacity: 1;
+	letter-spacing: 0;
+	background-color: transparent;
+}
+
+#adminbar .active a,
+#adminbar li.active:hover {
+	color: #000;
+	opacity: 1;
+}
+
+#adminbar .active,
+#adminbar li.active:hover {
+	background: none;
+}
+
+#adminbar li.admin,
+#adminbar li.admin:hover {
+	float: right;
+	border: none;
+	background: none;
+}
+
+#adminbar .admin a {
+	padding: 0 10px;
+	border-left: 1px solid #666;
+	border-right: none;
+}
+
+#adminbar .admin a:hover  {
+	color: #000;
+	opacity: 1;
+	text-decoration: none;
+}
+
+#adminbar .admin .pages {
+	background: url(settings.svg) no-repeat 12px  center;
+}
+
+#adminbar .admin a:first-child {
+	background: url(log-out.svg) no-repeat 12px  center;
+}
+
+#adminbar .browse {
+	border-left: 1px solid #bbb;
+}
+
+#adminbar .browse a {
+	background: url(eye.svg) no-repeat 12px  center;
+}
+
+#adminbar .edit a {
+	background: url(edit-2.svg) no-repeat 12px  center;
+}
+
+#adminbar .add-page a {
+	background: url(plus-circle.svg) no-repeat 12px  center;
+}
+
+#adminbar .permissions span {
+	background: url(lock.svg) no-repeat 12px  center;
+}
+
+#adminbar li:hover {
+	background: #ddd;
+}
+
+#adminbar li.permissions:hover {
+	background: inherit;
+}
+
+#ab-modal {
+	top: 40px;
+}

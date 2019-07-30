@@ -1,0 +1,87 @@
+html {
+    padding-top: 40px;
+}
+
+#adminbar {
+    background: #fff url(sprite.png) repeat-x 0px 2px;
+    border: 0;
+    height: 40px;
+}
+
+#adminbar li {
+    border-right: 1px solid #dbdbdb;
+    height: 40px;
+}
+
+#adminbar li a,
+#adminbar li span {
+    color: #505050;
+    font-family: arial, sans-serif;
+    height: 40px;
+    line-height: 42px;
+    padding: 0 10px 0 36px;
+}
+
+#adminbar .active,
+#adminbar li.active:hover {
+    background: url(sprite.png) repeat-x 0px -380px;
+}
+
+#adminbar li.admin,
+#adminbar li.admin:hover {
+    background: url(sprite.png) no-repeat -50px -42px;
+}
+
+#adminbar .admin a {
+    border-left: 1px solid #bebebe;
+    padding: 0 10px;
+}
+
+#adminbar .admin a:hover  {
+    text-decoration: underline;
+}
+
+#adminbar .browse {
+    border-left: 1px solid #cecece;
+}
+
+#adminbar .browse a {
+    background: transparent url(sprite.png) 10px -182px;
+}
+
+#adminbar .edit a {
+    background: transparent url(sprite.png) 12px -97px;
+}
+
+#adminbar .add-page a {
+    background: transparent url(sprite.png) 12px -140px;
+}
+
+#adminbar .permissions span {
+    background: transparent url(sprite.png) 12px -327px;
+}
+
+#adminbar li:hover {
+    background: #dde1e4;
+}
+
+#adminbar li.permissions:hover {
+    background: inherit;
+}
+
+#ab-modal {
+    max-height: calc(100vh - 40px);
+    top: 40px;
+}
+
+#ab-modal.visible {
+    height: calc(100vh - 40px);
+}
+
+#ab-pagesaved {
+    background: white;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    border-bottom: 1px solid #cecece;
+}
