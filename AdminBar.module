@@ -3,15 +3,17 @@
 /**
  * AdminBar module for ProcessWire CMS/CMF
  *
+ * This module provides easy front-end admin bar for editing page content in ProcessWire.
+ *
  * @copyright 2011-2019 @apeisa & Teppo Koivula
  * @license http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License, version 2
  */
 class AdminBar extends WireData implements Module, ConfigurableModule {
 
 	/**
-	 * This is where you define some basic info about your module.
+	 * Basic information for this module
 	 *
-	 * See /wire/core/Module.php for definitions of all these.
+	 * See /wire/core/Module.php for more details.
 	 * 
 	 * @return array
 	 */
@@ -19,8 +21,8 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
 		return array(
 			'title' => 'Admin Bar',
 			'summary' => 'Fast and easy in-page content editing',
-			'href' => 'http://processwire.com/talk/index.php/topic,56.0.html',
-			'version' => '1.0.7',
+			'href' => 'http://modules.processwire.com/modules/admin-bar/',
+			'version' => '1.1.0',
 			'permanent' => false,
 			'autoload' => true,
 			'singular' => true,
@@ -30,18 +32,11 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
 	/**
 	 * Default configuration for our module
 	 *
-	 * The point of putting this in it's own function is so that you don't have to specify
-	 * these defaults more than once.
-	 *
-	 * However, there is no requirement for you to do this (it was just my preferred style).
-	 * If you preferred, you could just check $this->showModal and if it was null, then you
-	 * would know it had not yet been configured (and likewise for the other vars).
-	 * 
 	 * @return array
 	 */
 	static public function getDefaultData() {
 		return array(
-			'showModal' => 1
+			'showModal' => 1,
 		);
 	}
 
@@ -54,7 +49,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
 	 *
 	 */
 	public function __construct() {
-		foreach(self::getDefaultData() as $key => $value) {
+		foreach (self::getDefaultData() as $key => $value) {
 			$this->$key = $value;
 		}
 	}
@@ -146,14 +141,12 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
 		// then we make js-redirect and break out of modal (there seems to be no other way than js)
 		if ($this->session->AB_pageSaved && $page->template == 'admin' && $this->input->get->modal) {
 			$redirect_url = rtrim($this->config->urls->root, '/') . $this->session->AB_pageSaved;
-			echo("<script language=\"javascript\">");
-			echo("top.location.href = \"{$redirect_url}\";");
-			echo("</script>");
+			echo "<script>top.location.href = '" . $redirect_url . "';</script>";
 			die();
 		}
 		// If we are in admin, we want to delete our session var
 		elseif ($page->template == 'admin') {
-		  $this->session->remove('AB_pageSaved');
+			$this->session->remove('AB_pageSaved');
 		}
 
 		// We need this in case page is deleted through admin bar - we want to redirect to it's parent after that
@@ -165,12 +158,14 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
 		if ($page->template == 'admin' && $this->input->get->modal) {
 			$out = <<<OUT
 <script>
-jQuery(document).ready(function($) {
-	$('#PageEditTabs').find('#_ProcessPageEditView').parent().remove();
-	$('#PageEditTabs').find('#_ProcessPageEditChildren').parent().remove();
-	$('#wrap_template').hide();
+['_ProcessPageEditView', '_ProcessPageEditChildren'].forEach(function(remove_id) {
+    const remove_tab = document.getElementById(remove_id);
+    if (remove_tab) remove_tab.remove();
 });
+const wrap_template = document.getElementById('wrap_template');
+if (wrap_template) wrap_template.style.display = 'none';
 </script>
+</body>
 OUT;
 			$event->return = str_ireplace('</body>', $out, $event->return);
 		}
@@ -178,27 +173,20 @@ OUT;
 		// if page is using the admin template, abort.
 		if ($page->template == 'admin') return;
 
-		$jQueryUrl = $this->config->urls->JqueryCore . "JqueryCore";
-
 		// find the location of this module for linking css and js files
 		$url = $this->config->urls->AdminBar . "AdminBar";
 		$info = self::getModuleInfo();
 
-		$out =  "\n\t<link rel='stylesheet' type='text/css' href='$url.css?v={$info['version']}' />";
+		$out = '<link rel="stylesheet" type="text/css" href="' . $url . '.css?v=' . $info['version'] . '">';
 
 		// Allows to customize css without touching module files or adding own files in templates
 		if (is_file($this->config->paths->AdminBar . "AdminBarCustom.css")){
-			$out .=  "\n\t<link rel='stylesheet' type='text/css' href='{$url}Custom.css' />";
-		}
-
-
-		if ($this->loadJquery) {
-			$out .= "\n\t<script type='text/javascript' src='$jQueryUrl.js'></script>";
+			$out .= '<link rel="stylesheet" type="text/css" href="' . $url . 'Custom.css">';
 		}
 
 		// the css and js links we're going to add
-		$out .= "\n\t<script type='text/javascript' src='$url.js?v={$info['version']}'></script>" .
-				"\n</body>";
+		$out .= '<script type="text/javascript" src="' . $url . '.js?v=' . $info['version'] . '"></script>'
+		      . '</body>';
 
 		// modify the value returned by $page->render() to include our css and js files
 		$event->return = str_ireplace('</body>', $out, $event->return);
@@ -316,7 +304,7 @@ OUT;
 		if (!$this->input->get->modal) return;
 		$url = $event->arguments(0);
 		if (preg_match('/[?&]ab_modal=/', $url)) return;
-		$url .= (count($this->input->get) ? '&' : '?') . "modal=1&ab_modal=1";
+		$url .= (!empty($this->input->get) ? '&' : '?') . "modal=1&ab_modal=1";
 		$event->arguments(0, $url);
 	}
 
@@ -349,15 +337,6 @@ OUT;
 		$field->attr('checked', empty($data['showModal']) ? '' : 'checked');
 		$fields->add($field);
 
-		// load jQuery field
-		$field = $modules->get("InputfieldCheckbox");
-		$field->name = "loadJquery";
-		$field->label = "Load jQuery";
-		$field->description = "AdminBar requires jQuery. If you use jQuery on your front end templates you may uncheck this. Otherwise, keep this checked.";
-		$field->value = 1; // providing a "checked" value for the checkbox is necessary
-		$field->attr('checked', empty($data['loadJquery']) ? '' : 'checked');
-		$fields->add($field);
-
 		return $fields;
 	}
 
@@ -377,7 +356,7 @@ OUT;
 	 */
 	public function ___uninstall() {
 		$ab_permission = $this->permissions->get('adminbar');
-		if ($ab_permission->id > 0) $this->permissions->delete($ab_permission);
+		if ($ab_permission->id) $this->permissions->delete($ab_permission);
 	}
 
 }

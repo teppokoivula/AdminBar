@@ -1,113 +1,98 @@
+document.addEventListener('DOMContentLoaded', function() {
 
-jQuery(document).ready(function($) {
+    // Add the adminbar-loaded class to body element.
+    document.body.classList.add('adminbar-loaded');
 
-	//prepare all js-enhanced functions
-	$('body').addClass('adminbar-loaded');
-	
-	var $adminbar = $('#adminbar');
-	var $li = $adminbar.find('li');
-	var $links = $adminbar.find('a').not('admin');
-	var $modalLinks = $adminbar.find('a.modal');
-	var $browse = $adminbar.find('.browse a');
-	
-	
-	var $modal = $('<div id="ab-modal"></div>').data('active', 'browse');
-	
-	var clicked = false;
-	
-	$links.click(function(){
-		setActive($(this));
-	});
-	
-	
-	
-	$modalLinks.click(function(){
-		if(!clicked) {
-			$modal.prependTo('body');
-		};
+    // Store references to AdminBar elements.
+    const adminbar = document.getElementById('adminbar');
+    const adminbar_items = adminbar.querySelectorAll('li');
+    const adminbar_links = adminbar.querySelectorAll('li:not(.admin) a');
+    const adminbar_modal_links = adminbar.querySelectorAll('a.modal');
+    const adminbar_browse = adminbar.querySelector('.browse a')
 
-		if ($adminbar.data('active') == $(this).attr('class')) {
-			slideUp(true);
-		} else {
-			
-			$modal.addClass('loading').find('iframe').remove();
-			
-			
-			slideDown($(this));
-			// We "preload" this so it should be shown pretty fast after animation
-			$iframe = $('<iframe name="ab_modal_iframe" id="ab_modal_iframe" frameborder="0" src="'+ $(this).attr('href') +'"></iframe>')
-			.css('width', '100%')
-			.css('height', 0)
-			.appendTo($modal);
-		
-			
-			$adminbar.data('active', $(this).attr('class'));
-		};
-		
+    const modal = document.createElement('div');
+    modal.setAttribute('id', 'ab-modal');
+    modal.setAttribute('data-active', 'browse');
+    modal.classList.add('hidden');
+    document.body.prepend(modal);
 
-		return false;
-	});
-	
-	$browse.click(function(){
-		slideUp(true);
-		return false;
-	});
-	
-	function setActive(link) {
-		$li.removeClass('active');
-		link.parent().addClass('active');
-	}
-	
-	function slideDown(link) {
-		
-		modalHeight = $(window).height() - 40; 
-		$modal.animate({
-			height: modalHeight + 'px'
-		},
-		
-		// Animation time
-		300,
-		
-		// After slide is done
-		function(){
-			$iframe.hide().css('height', $modal.height()).show();
-		});
-		document.body.style.overflow='hidden';
-	};
-	
-	function slideUp(clean) {
-		if (clean) {
-			$adminbar.data('active', 'browse');
-			$modal.find('iframe').attr('src', '').remove();
-			setActive($browse);
-		}
-		$adminbar.data('active', 'browse');
-		$modal.removeClass('loading').stop().animate({
-			height: '0px'
-		}, 300, function(){
-			$modal.addClass('loading');
-		});
-		document.body.style.overflow='auto';
-		
-	};
-	
-	$(window).resize(function() {
-		if ($modal.height() > 1) {
-			modalHeight = $(window).height() - 40; 
-			$modal.stop().animate({
-				height: modalHeight + 'px'
-			},
-			
-			// Animation time
-			100, function(){
-				$iframe.css('height', $modal.height());
-			});
-		}
-		
-	});
-	
-	$("#ab-pagesaved").delay(3000).slideUp("normal");
-	
-	
+    // Attach click handler to regular links.
+    adminbar_links.forEach(function(item) {
+        item.addEventListener('click', function(event) {
+            event.preventDefault();
+            setActive(event.currentTarget);
+        });
+    });
 
-});
+    // Attach click handler to modal links.
+    adminbar_modal_links.forEach(function(item) {
+        item.addEventListener('click', function(event) {
+            const modal_link = event.currentTarget;
+            if (adminbar.getAttribute('data-active') == modal_link.getAttribute('class')) {
+                slideUp(true);
+            } else {
+                modal.classList.add('loading');
+                modal.querySelectorAll('iframe').forEach(function(item) {
+                    item.remove();
+                });
+                slideDown();
+
+                const iframe = document.createElement('iframe');
+                iframe.setAttribute('name', 'ab_modal_iframe');
+                iframe.setAttribute('id', 'ab_modal_iframe');
+                iframe.setAttribute('frameborder', 0);
+                iframe.setAttribute('src', modal_link.getAttribute('href'));
+                modal.append(iframe);
+
+                adminbar.setAttribute('data-active', modal_link.getAttribute('class'));
+            }
+            return false;
+        });
+    });
+
+    // Attach click handler to the browse link.
+    adminbar_browse.addEventListener('click', function(event) {
+        slideUp(true);
+        return false;
+    });
+
+    // Make a specific AdminBar link active, removing active state from all other links.
+    function setActive(link) {
+        adminbar_links.forEach(function(item) {
+            item.parentElement.classList.remove('active');
+        });
+        link.parentElement.classList.add('active');
+    }
+
+    // Slide modal window down.
+    function slideDown() {
+        modal.classList.add('visible');
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    };
+
+    // Slide modal window up.
+    function slideUp(clean) {
+        adminbar.setAttribute('data-active', 'browse');
+        modal.classList.remove('loading');
+        if (clean) {
+            modal.querySelectorAll('iframe').forEach(function(item) {
+                item.setAttribute('src', '');
+                item.remove();
+            });
+            setActive(adminbar_browse);
+        }
+        modal.classList.remove('visible');
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    };
+
+    // After page has been saved in modal window, close the modal.
+    const adminbar_page_saved = document.getElementById('ab-pagesaved');
+    if (adminbar_page_saved) {
+        document.setTimeout(function() {
+            slideUp(adminbar_page_saved);
+        }, 3000);
+    }
+
+}, false);

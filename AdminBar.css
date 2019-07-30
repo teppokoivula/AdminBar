@@ -11,116 +11,131 @@
  */
 
 html {
-	padding-top: 40px;
+    padding-top: 40px;
 }
 
 #adminbar {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	height: 40px;
-	margin: 0;
-	padding: 0;
-	background: white url(sprite.png) repeat-x 0px 2px;
-	z-index: 999;
+    background: white url(sprite.png) repeat-x 0px 2px;
+    height: 40px;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 999;
 }
 
 #adminbar li {
-	display: block;
-	float: left;
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	height: 40px;
-	border-right: 1px solid #dbdbdb;
+    border-right: 1px solid #dbdbdb;
+    display: block;
+    float: left;
+    height: 40px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
-#adminbar li a, #adminbar li span {
-	display: block;
-	float: left;
-	height: 40px;
-	line-height: 42px;
-	padding: 0 10px 0 36px;
-	font-family: arial, sans-serif;
-	color: #505050;
-	text-decoration: none;
+#adminbar li a,
+#adminbar li span {
+    color: #505050;
+    display: block;
+    float: left;
+    font-family: arial, sans-serif;
+    height: 40px;
+    line-height: 42px;
+    padding: 0 10px 0 36px;
+    text-decoration: none;
 }
 
 #adminbar li a:hover {
-	text-decoration: none;
+    text-decoration: none;
 }
 
 #adminbar .active, #adminbar li.active:hover {
-	background: url(sprite.png) repeat-x 0px -380px;
+    background: url(sprite.png) repeat-x 0px -380px;
 }
 
 #adminbar li.admin, #adminbar li.admin:hover {
-	float: right;
-	background: url(sprite.png) no-repeat -50px -42px;
+    background: url(sprite.png) no-repeat -50px -42px;
+    float: right;
 }
 
 #adminbar .admin a {
-	padding: 0 10px;
-	border-left: 1px solid #bebebe;
+    border-left: 1px solid #bebebe;
+    padding: 0 10px;
 }
 #adminbar .admin a:hover  {
-	text-decoration: underline;
+    text-decoration: underline;
 }
 
 #adminbar .browse {
-	border-left: 1px solid #cecece;
+    border-left: 1px solid #cecece;
 }
 
 #adminbar .browse a {
-	background: transparent url(sprite.png) 10px -182px;
+    background: transparent url(sprite.png) 10px -182px;
 }
 
 #adminbar .edit a {
-	background: transparent url(sprite.png) 12px -97px;
+    background: transparent url(sprite.png) 12px -97px;
 }
 
 #adminbar .add-page a {
-	background: transparent url(sprite.png) 12px -140px;
+    background: transparent url(sprite.png) 12px -140px;
 }
 
 #adminbar .permissions span {
-	background: transparent url(sprite.png) 12px -327px;
+    background: transparent url(sprite.png) 12px -327px;
 }
 
 #adminbar li:hover {
-	background: #dde1e4;
+    background: #dde1e4;
 }
 
 #adminbar li.permissions:hover {
-	background: inherit;
+    background: inherit;
 }
 
 #ab-modal {
-	z-index: 998;
-	background: white;
-	position: fixed;
-	top: 40px;
-	left: 0px;
-	right: 0px;
+    background: white;
+    height: 0;
+    max-height: calc(100vh - 40px);
+    opacity: 0;
+    overflow: hidden;
+    position: fixed;
+    top: 40px;
+    transition: height .25s ease-in-out, opacity .1s;
+    width: 100vw;
+    z-index: 998;
+}
+
+#ab-modal.visible {
+    height: calc(100vh - 40px);
+    opacity: 1;
 }
 
 #ab-modal.hidden {
-	border: none;
+    border: 0;
 }
 
 #ab-modal.loading {
-	background: white url(loading.gif) 13px 6px no-repeat;
+    background: white url(loading.gif) center center no-repeat;
+}
+
+#ab_modal_iframe {
+    height: 100%;
+    width: 100%;
 }
 
 #ab-pagesaved {
-	background: white;
-	position: absolute;
-	top: 0px;
-	left: 0px;
-	right: 0px;
-	height: 40px;
-	line-height: 40px;
-	text-align: center;
-	border-bottom: 1px solid #cecece;
+    background: white;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    border-bottom: 1px solid #cecece;
 }
