@@ -14,7 +14,11 @@ document.addEventListener('DOMContentLoaded', function() {
     modal.setAttribute('id', 'ab-modal');
     modal.setAttribute('data-active', 'browse');
     modal.classList.add('hidden');
-    document.body.prepend(modal);
+    if (document.body.childNodes.length) {
+        document.body.insertBefore(modal, document.body.childNodes[0]);
+    } else {
+        document.body.appendChild(modal);
+    }
 
     // Attach click handler to regular links.
     adminbar_links.forEach(function(item) {
@@ -33,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 modal.classList.add('loading');
                 modal.querySelectorAll('iframe').forEach(function(item) {
-                    item.remove();
+                    item.parentNode.removeChild(item);
                 });
                 slideDown();
 
@@ -42,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 iframe.setAttribute('id', 'ab_modal_iframe');
                 iframe.setAttribute('frameborder', 0);
                 iframe.setAttribute('src', modal_link.getAttribute('href'));
-                modal.append(iframe);
+                modal.appendChild(iframe);
 
                 adminbar.setAttribute('data-active', modal_link.getAttribute('class'));
             }
@@ -78,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (clean) {
             modal.querySelectorAll('iframe').forEach(function(item) {
                 item.setAttribute('src', '');
-                item.remove();
+                item.parentNode.removeChild(item);
             });
             setActive(adminbar_browse);
         }

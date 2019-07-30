@@ -22,7 +22,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
 			'title' => 'Admin Bar',
 			'summary' => 'Fast and easy in-page content editing',
 			'href' => 'http://modules.processwire.com/modules/admin-bar/',
-			'version' => '1.1.0',
+			'version' => '1.1.1',
 			'permanent' => false,
 			'autoload' => true,
 			'singular' => true,
@@ -160,7 +160,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
 <script>
 ['_ProcessPageEditView', '_ProcessPageEditChildren'].forEach(function(remove_id) {
     const remove_tab = document.getElementById(remove_id);
-    if (remove_tab) remove_tab.remove();
+    if (remove_tab) remove_tab.parentNode.removeChild(remove_tab);
 });
 const wrap_template = document.getElementById('wrap_template');
 if (wrap_template) wrap_template.style.display = 'none';
