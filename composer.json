@@ -1,0 +1,27 @@
+{
+    "name": "teppokoivula/admin-bar",
+    "type": "pw-module",
+    "description": "AdminBar is a ProcessWire CMS/CMF module that provides easy front-end admin bar for editing page content.",
+    "keywords": [
+        "module",
+        "processwire"
+    ],
+    "homepage": "https://github.com/teppokoivula/AdminBar",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Teppo Koivula",
+            "homepage": "https://github.com/teppokoivula",
+            "email": "teppo.koivula@gmail.com"
+        },
+        {
+            "name": "apeisa",
+            "homepage": "https://github.com/apeisa",
+        }
+    ],
+    "require": {
+        "php": ">=7.1",
+        "processwire/processwire": ">=3.0.112",
+        "wireframe-framework/processwire-composer-installer": "^1.0.0"
+    }
+}
