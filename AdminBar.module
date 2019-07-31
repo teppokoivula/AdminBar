@@ -22,7 +22,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
 			'title' => 'Admin Bar',
 			'summary' => 'Fast and easy in-page content editing',
 			'href' => 'http://modules.processwire.com/modules/admin-bar/',
-			'version' => '1.1.2',
+			'version' => '1.1.3',
 			'permanent' => false,
 			'autoload' => true,
 			'singular' => true,
@@ -57,6 +57,9 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
 	/**
 	 * Permission required by our module
 	 *
+	 * This property gets populated in init().
+	 *
+	 * @var Permission
 	 */
 	protected $ab_permission;
 
@@ -81,13 +84,15 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
 	 */
 	public function init() {
 
-		if ($this->user->isGuest() || !$this->input->get->ab_modal) return false;
+		if ($this->user->isGuest()) return false;
 
 		$this->ab_permission = $this->permissions->get('adminbar');
 		if (!$this->user->hasPermission($this->ab_permission)) return false;
 
-		// hook before forms are rendered, so that we can modify the form's "action" attribute
-		$this->addHookBefore('InputfieldForm::render', $this, 'formRender');
+		// Hook before forms are rendered so that we can modify the form's "action" attribute.
+		if ($this->input->get->ab_modal) {
+			$this->addHookBefore('InputfieldForm::render', $this, 'formRender');
+		}
 
 	}
 
