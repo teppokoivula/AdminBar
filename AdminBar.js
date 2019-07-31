@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // After page has been saved in modal window, close the modal.
     const adminbar_page_saved = document.getElementById('ab-pagesaved');
     if (adminbar_page_saved) {
-        document.setTimeout(function() {
+        window.setTimeout(function() {
             slideUp(adminbar_page_saved);
         }, 3000);
     }
