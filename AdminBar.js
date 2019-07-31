@@ -87,7 +87,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const adminbar_page_saved = document.getElementById('ab-pagesaved');
     if (adminbar_page_saved) {
         window.setTimeout(function() {
-            slideUp(adminbar_page_saved);
+            adminbar_page_saved.classList.add('hidden');
+            window.setTimeout(function() {
+                adminbar_page_saved.parentNode.removeChild(adminbar_page_saved);
+            }, 1500);
         }, 3000);
     }
 

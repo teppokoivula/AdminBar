@@ -138,4 +138,10 @@ html {
     line-height: 40px;
     text-align: center;
     border-bottom: 1px solid #cecece;
+    transition: all .25s;
+}
+
+#ab-pagesaved.hidden {
+    top: -40px;
+    opacity: 0;
 }
