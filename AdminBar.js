@@ -5,52 +5,44 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Store references to AdminBar elements.
     const adminbar = document.getElementById('adminbar');
-    const adminbar_items = adminbar.querySelectorAll('li');
-    const adminbar_links = adminbar.querySelectorAll('li:not(.admin) a');
-    const adminbar_modal_links = adminbar.querySelectorAll('a.modal');
     const adminbar_browse = adminbar.querySelector('.browse a')
 
-    const modal = document.createElement('div');
-    modal.setAttribute('id', 'ab-modal');
-    modal.setAttribute('data-active', 'browse');
-    modal.classList.add('hidden');
+    // Create container to use for modal window.
+    const adminbar_modal = document.createElement('div');
+    adminbar_modal.setAttribute('id', 'ab-modal');
+    adminbar_modal.setAttribute('data-active', 'browse');
+    adminbar_modal.classList.add('hidden');
     if (document.body.childNodes.length) {
-        document.body.insertBefore(modal, document.body.childNodes[0]);
+        document.body.insertBefore(adminbar_modal, document.body.childNodes[0]);
     } else {
-        document.body.appendChild(modal);
+        document.body.appendChild(adminbar_modal);
     }
 
-    // Attach click handler to regular links.
-    adminbar_links.forEach(function(item) {
+    // Attach click handler to modal links.
+    adminbar.querySelectorAll('a.modal').forEach(function(item) {
         item.addEventListener('click', function(event) {
             event.preventDefault();
-            setActive(event.currentTarget);
-        });
-    });
-
-    // Attach click handler to modal links.
-    adminbar_modal_links.forEach(function(item) {
-        item.addEventListener('click', function(event) {
-            const modal_link = event.currentTarget;
-            if (adminbar.getAttribute('data-active') == modal_link.getAttribute('class')) {
+            const link = event.currentTarget;
+            if (adminbar.getAttribute('data-active') == link.getAttribute('class')) {
+                // Active link: close modal and clean up its contents.
                 slideUp(true);
             } else {
-                modal.classList.add('loading');
-                modal.querySelectorAll('iframe').forEach(function(item) {
+                // Inactive link: remove iframe (if exists) and open modal.
+                setActive(link);
+                adminbar_modal.classList.add('loading');
+                adminbar_modal.querySelectorAll('iframe').forEach(function(item) {
                     item.parentNode.removeChild(item);
                 });
                 slideDown();
 
+                // Create new iframe to contain link target page.
                 const iframe = document.createElement('iframe');
                 iframe.setAttribute('name', 'ab_modal_iframe');
                 iframe.setAttribute('id', 'ab_modal_iframe');
                 iframe.setAttribute('frameborder', 0);
-                iframe.setAttribute('src', modal_link.getAttribute('href'));
-                modal.appendChild(iframe);
-
-                adminbar.setAttribute('data-active', modal_link.getAttribute('class'));
+                iframe.setAttribute('src', link.getAttribute('href'));
+                adminbar_modal.appendChild(iframe);
             }
-            return false;
         });
     });
 
@@ -62,32 +54,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Make a specific AdminBar link active, removing active state from all other links.
     function setActive(link) {
-        adminbar_links.forEach(function(item) {
+        adminbar.querySelectorAll('li:not(.admin) a').forEach(function(item) {
             item.parentElement.classList.remove('active');
         });
         link.parentElement.classList.add('active');
+        adminbar.setAttribute('data-active', link.getAttribute('class'));
     }
 
     // Slide modal window down.
     function slideDown() {
-        modal.classList.add('visible');
-        modal.classList.remove('hidden');
+        adminbar_modal.classList.add('visible');
+        adminbar_modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
     };
 
     // Slide modal window up.
     function slideUp(clean) {
-        adminbar.setAttribute('data-active', 'browse');
-        modal.classList.remove('loading');
+        setActive(adminbar_browse);
+        adminbar_modal.classList.remove('loading');
         if (clean) {
-            modal.querySelectorAll('iframe').forEach(function(item) {
+            adminbar_modal.querySelectorAll('iframe').forEach(function(item) {
                 item.setAttribute('src', '');
                 item.parentNode.removeChild(item);
             });
-            setActive(adminbar_browse);
         }
-        modal.classList.remove('visible');
-        modal.classList.add('hidden');
+        adminbar_modal.classList.remove('visible');
+        adminbar_modal.classList.add('hidden');
         document.body.style.overflow = 'auto';
     };
 
