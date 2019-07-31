@@ -57,9 +57,11 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
     /**
      * Permission required by our module
      *
+     * This property gets populated in init().
+     *
      * @var Permission
      */
-    protected $ab_permission;
+    protected $ab_permission = null;
 
     /**
      * Initialize the module and setup hooks
@@ -68,13 +70,15 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
      */
     public function init() {
 
-        if ($this->user->isGuest() || !$this->input->get->ab_modal) return false;
+        if ($this->user->isGuest()) return false;
 
         $this->ab_permission = $this->permissions->get('adminbar');
         if (!$this->user->hasPermission($this->ab_permission)) return false;
 
-        // hook before forms are rendered, so that we can modify the form's "action" attribute
-        $this->addHookBefore('InputfieldForm::render', $this, 'formRender');
+        // Hook before forms are rendered so that we can modify the form's "action" attribute.
+        if ($this->input->get->ab_modal) {
+            $this->addHookBefore('InputfieldForm::render', $this, 'formRender');
+        }
     }
 
     /**
