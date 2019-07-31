@@ -166,16 +166,6 @@ OUT;
             }
         }
 
-        // Default text to show when adding new pages.
-        $template_title = '';
-
-        // If only one template is allowed, we show it's label or name instead of default "page".
-        if (count($page->template->childTemplates) == 1) {
-            $childTemplate = array_pop((array_values($page->template->childTemplates)));
-            $labelLanguage = $this->modules->isInstalled('LanguageSupport') && !$this->user->language->isDefault() ? $this->user->language : '';
-            $templateTitle = $this->templates->get($childTemplate)->get('label' . ($labelLanguage ? $labelLanguage . '|label' : '') . '|name');
-        }
-
         // Create markup for Admin Bar.
         $out .= $this->renderAdminBar([
             'page' => $page,
@@ -183,13 +173,10 @@ OUT;
 
         // Page was saved in modal window, notify the user about what happened.
         if ($this->session->AB_pageSaved) {
-            if ($this->session->AB_pageRemove) {
-                $removed = sprintf($this->_("%s moved to the trash."), $this->session->AB_pageRemove);
-                $out .= '<div id="ab-pagesaved-cont"><div id="ab-pagesaved">' . $removed . '</div></div>';
-            } else {
-                $saved = sprintf($this->_("%s saved succesfully."), $page->title);
-                $out .= '<div id="ab-pagesaved-cont"><div id="ab-pagesaved">' . $saved . '</div></div>';
-            }
+            $out .= vsprintf('<div id="adminbar-page-saved" class="adminbar__page-saved adminbar__page-saved--%s">%s</div>',
+                $this->session->AB_pageRemove ? ['removed', sprintf($this->_("%s moved to the trash."), $this->session->AB_pageRemove)]
+                                              : ['saved', sprintf($this->_("%s saved succesfully."), $page->title)]
+            );
             $this->session->remove('AB_pageSaved');
             $this->session->remove('AB_pageRemove');
         } else {
@@ -207,93 +194,120 @@ OUT;
      * @param array $args Render arguments.
      * @return string Rendered Admin Bar HTML markup.
      */
-    public function renderAdminBar(array $args = []): string {
+    public function ___renderAdminBar(array $args = []): string {
 
         // Combine custom arguments with defaults.
         $args = array_merge([
             'page' => $this->page,
-            'show_modal' => $this->showModal,
+            'modal_class' => $this->showModal ? 'adminbar__link--modal' : '',
+            'modal_get' => $this->showModal ? '&modal=1&ab_modal=1' : '',
+            'template_title' => '',
+            'strings' => [
+                'browse' => $this->_('Browse'),
+                'edit' => $this->_('Edit'),
+                'new' => $this->_('New'),
+                'logout' => $this->_('Logout'),
+                'admin' => $this->_('Admin'),
+                'locked' => $this->_('This page is locked.'),
+                'norights' => $this->_('No editing rights.'),
+            ],
         ], $args);
 
-        // Check if showModal is enabled, in which case certain link are opened in modal window.
-        $modal_class = '';
-        $modal_get = '';
-        if ($args['show_modal']) {
-            $modal_class = 'modal';
-            $modal_get = '&modal=1&ab_modal=1';
+        // If only one template is allowed, we show it's label or name instead of default "page".
+        if (empty($args['template_title']) && count($page->template->childTemplates) == 1) {
+            $child_emplate = array_pop((array_values($page->template->childTemplates)));
+            $label_language = $this->modules->isInstalled('LanguageSupport') && !$this->user->language->isDefault() ? $this->user->language : '';
+            $new_template_title = $this->templates->get($child_template)->get('label' . ($label_language ? $label_language . '|label' : '') . '|name');
         }
-
-        // Translatable strings.
-        $strings = [
-            'browse' => $this->_("Browse"),
-            'edit' => $this->_("Edit"),
-            'new' => $this->_("New"),
-            'logout' => $this->_("Logout"),
-            'admin' => $this->_("Admin"),
-            'locked' => $this->_("This page is locked."),
-            'norights' => $this->_("No editing rights."),
-        ];
 
         // Rendering templates.
         $templates = [
-            'list' => '<ul id="adminbar">%s</ul>',
-            'list_item' => '<li class="%s"><a href="%s" class="%s">%s</a></li>',
-            'list_item_denied' => '<li class="permissions"><span></span></li>',
+            'adminbar' => '<div id="adminbar" class="adminbar">%s</div>',
+            'list' => '<ul class="adminbar__list adminbar__list--%s">%s</ul>',
+            'list_item' => '<li class="adminbar__list-item adminbar__list-item--%s">%s</li>',
+            'link' => '<a class="adminbar__link adminbar__link--%s" href="%s">%s</a>',
+            'text' => '<span class="adminbar__text">%s</span>',
         ];
 
         // Placeholder for output.
         $out = '';
 
-        // Browse link.
-        $out .= vsprintf($templates['list_item'], [
-            'browse active',
-            '#',
-            '',
-            $strings['browse'],
-        ]);
-
-        // Edit page link.
-        if ($args['page']->editable() && !$args['page']->is(Page::statusLocked)) {
-            $out .= vsprintf($templates['list_item'], [
-                'edit',
-                $this->config->urls->admin . 'page/edit/?id=' . $args['page']->id . $modal_get,
-                $modal_class . ' edit',
-                $strings['edit'],
-            ]);
-        } else if (!$args['page']->editable()) {
-            $out .= sprintf($templates['list_item_denied'], $strings['norights']);
-        } else if ($args['page']->is(Page::statusLocked)) {
-            $out .= sprintf($templates['list_item_denied'], $strings['locked']);
+        // Add items.
+        $items = $this->getAdminBarItems($args);
+        foreach (['left', 'right'] as $list) {
+            $list_out = '';
+            $list_items = $items[$list] ?? [];
+            foreach ($list_items as $key => $item) {
+                if (empty($item)) continue;
+                $list_out .= vsprintf($templates['list_item'], [
+                    $key,
+                    is_array($item) ? vsprintf($templates['link'], $item) : sprintf($templates['text'], $item),
+                ]);
+            }
+            if (!empty($list_out)) {
+                $out .= sprintf($templates['list'], $list, $list_out);
+            }
         }
-
-        // Add page link.
-        if ($args['page']->addable()) {
-            $out .= vsprintf($templates['list_item'], [
-                'add-page',
-                $this->config->urls->admin . 'page/add/?parent_id=' . $args['page']->id . $modal_get,
-                $modal_class . ' add',
-                $strings['new'] . ' ' . $template_title,
-            ]);
-        }
-
-        // Logout link.
-        $out .= vsprintf($templates['list_item'], [
-            'admin',
-            $this->config->urls->admin . 'login/logout/',
-            '',
-            $strings['logout'],
-        ]);
-
-        // Admin link.
-        $out .= vsprintf($templates['list_item'], [
-            'admin',
-            $this->config->urls->admin . 'page/?open=' . $args['page']->id,
-            'pages',
-            $strings['admin'],
-        ]);
 
         // Return final output.
-        return sprintf($templates['list'], $out);
+        return sprintf($templates['adminbar'], $out);
+    }
+
+    /**
+     * Return a list of items
+     *
+     * @param array $args Arguments.
+     * @return array
+     */
+    public function ___getAdminBarItems(array $args) {
+
+        // Array of items.
+        $items = [
+            'left' => [
+                'browse' => [
+                    'class' => 'browse',
+                    'link' => '#',
+                    'text' => $args['strings']['browse'],
+                ],
+                'edit' => $args['page']->editable() && !$args['page']->is(Page::statusLocked) ? [
+                    'class' => 'edit ' . ($args['modal_class'] ?? ' '),
+                    'link' => $this->config->urls->admin . 'page/edit/?id=' . $args['page']->id . $args['modal_get'],
+                    'text' => $args['strings']['edit'],
+                ] : null,
+                'new' => $args['page']->addable() ? [
+                    'class' => 'new ' . ($args['modal_class'] ?? ' '),
+                    'link' => $this->config->urls->admin . 'page/add/?parent_id=' . $args['page']->id . $args['modal_get'],
+                    'text' => $args['strings']['new'] . ' ' . $template_title,
+                ] : null,
+            ],
+            'right' => [
+                'logout' => [
+                    'class' => 'logout',
+                    'link' => $this->config->urls->admin . 'login/logout/',
+                    'text' => $args['strings']['logout'],
+                ],
+                'admin' => [
+                    'class' => 'admin',
+                    'link' => $this->config->urls->admin . 'page/?open=' . $args['page']->id,
+                    'text' => $args['strings']['admin'],
+                ],
+            ],
+        ];
+
+        // If page is non-editable, provide additional details.
+        if (empty($items['left']['edit'])) {
+            if (!$args['page']->editable()) {
+                $items['left']['edit'] = [
+                    'text' => $args['strings']['norights'],
+                ];
+            } else if ($args['page']->is(Page::statusLocked)) {
+                $items['left']['edit'] = [
+                    'text' => $args['strings']['locked'],
+                ];
+            }
+        }
+
+        return $items;
     }
 
     /**

@@ -2,7 +2,7 @@ html {
     padding-top: 40px;
 }
 
-#adminbar {
+.adminbar {
     background: #fff;
     border-bottom: 1px solid #dbdbdb;
     height: 40px;
@@ -15,7 +15,16 @@ html {
     z-index: 999;
 }
 
-#adminbar li {
+.adminbar__list {
+    margin: 0;
+    padding: 0;
+}
+
+.adminbar__list--right {
+    float: right;
+}
+
+.adminbar__list-item {
     border-right: 1px solid #dbdbdb;
     display: block;
     float: left;
@@ -25,8 +34,17 @@ html {
     padding: 0;
 }
 
-#adminbar li a,
-#adminbar li span {
+.adminbar__list-item:hover {
+    background: #eee;
+}
+
+.adminbar__list-item--active,
+.adminbar__list-item--active:hover {
+    background: #eee;
+}
+
+.adminbar__link,
+.adminbar__text {
     color: #505050;
     display: block;
     float: left;
@@ -36,41 +54,24 @@ html {
     text-decoration: none;
 }
 
-#adminbar .active,
-#adminbar li.active:hover {
-    background: #eee;
+.adminbar__link--browse {
+    border-left: 1px solid #cecece;
 }
 
-#adminbar li a:hover {
+.adminbar__link:hover {
     text-decoration: none;
 }
 
-#adminbar li.admin {
-    float: right;
-}
-
-#adminbar .admin a {
+.adminbar__list--right .adminbar__link {
     border-left: 1px solid #bebebe;
     padding: 0 10px;
 }
 
-#adminbar .admin a:hover  {
+.adminbar__list--right .adminbar__link:hover {
     text-decoration: underline;
 }
 
-#adminbar .browse {
-    border-left: 1px solid #cecece;
-}
-
-#adminbar li:hover {
-    background: #eee;
-}
-
-#adminbar li.permissions:hover {
-    background: inherit;
-}
-
-#ab-modal {
+.adminbar__modal {
     background: white;
     height: 0;
     max-height: calc(100vh - 40px);
@@ -83,25 +84,25 @@ html {
     z-index: 998;
 }
 
-#ab-modal.visible {
+.adminbar__modal--visible {
     height: calc(100vh - 40px);
     opacity: 1;
 }
 
-#ab-modal.hidden {
+.adminbar__modal--hidden {
     border: 0;
 }
 
-#ab-modal.loading {
+.adminbar__modal--loading {
     background: white url(loading.gif) center center no-repeat;
 }
 
-#ab_modal_iframe {
+.adminbar__iframe {
     height: 100%;
     width: 100%;
 }
 
-#ab-pagesaved {
+.adminbar__page-saved {
     background: white;
     position: absolute;
     top: 0px;
