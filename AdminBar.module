@@ -435,6 +435,19 @@ OUT;
         $field->value = $data['theme'];
         $fields->add($field);
 
+        // custom theme
+        $field = $this->modules->get('InputfieldText');
+        $field->name = 'custom_theme';
+        $field->label = 'Custom theme';
+        $field->icon = 'graduation-cap';
+        $field->showIf = 'theme=custom';
+        $field->required = true;
+        $field->requireIf = 'theme=custom';
+        $field->description = 'If you want to use your own custom theme, fill this field (overrides theme selection above).';
+        $field->notes = 'Type in the path to the directory containing theme.css (and optional theme.js, theme.php, and config.php) file(s) for your theme. Path has to be relative to your site directory, such as /templates/my-adminbar-theme/.';
+        $field->value = $data['custom_theme'];
+        $fields->add($field);
+
         // theme specific custom config
         $config_file = $this->config->paths->get('AdminBar') . 'themes/' . basename($data['theme']) . '/config.php';
         if ($data['theme'] == 'custom' && $data['custom_theme']) {
@@ -449,19 +462,6 @@ OUT;
                 $fields->add($fieldset);
             }
         }
-
-        // custom theme
-        $field = $this->modules->get('InputfieldText');
-        $field->name = 'custom_theme';
-        $field->label = 'Custom theme';
-        $field->icon = 'graduation-cap';
-        $field->showIf = 'theme=custom';
-        $field->required = true;
-        $field->requireIf = 'theme=custom';
-        $field->description = 'If you want to use your own custom theme, fill this field (overrides theme selection above).';
-        $field->notes = 'Type in the path to the directory containing theme.css (and optional theme.js and theme.php) file(s) for your theme. Path has to be relative to your site directory, such as /templates/my-adminbar-theme/.';
-        $field->value = $data['custom_theme'];
-        $fields->add($field);
 
         return $fields;
     }
