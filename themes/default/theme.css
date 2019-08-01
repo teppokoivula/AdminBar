@@ -13,6 +13,11 @@
     color: #505050;
     font-family: arial, sans-serif;
     padding: 0 10px 0 36px;
+    text-decoration: none;
+}
+
+.adminbar__link:hover {
+    text-decoration: none;
 }
 
 .adminbar__list-item--active,
