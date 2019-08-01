@@ -4,7 +4,6 @@ html {
 
 .adminbar {
     background: #fff;
-    border-bottom: 1px solid #dbdbdb;
     height: 40px;
     left: 0;
     margin: 0;
@@ -25,7 +24,6 @@ html {
 }
 
 .adminbar__list-item {
-    border-right: 1px solid #dbdbdb;
     display: block;
     float: left;
     height: 40px;
@@ -54,21 +52,12 @@ html {
     text-decoration: none;
 }
 
-.adminbar__link--browse {
-    border-left: 1px solid #cecece;
-}
-
 .adminbar__link:hover {
     text-decoration: none;
 }
 
 .adminbar__list--right .adminbar__link {
-    border-left: 1px solid #bebebe;
     padding: 0 10px;
-}
-
-.adminbar__list--right .adminbar__link:hover {
-    text-decoration: underline;
 }
 
 .adminbar__modal {

@@ -150,24 +150,30 @@ OUT;
         // Get module path, URL, and version for styles and scripts.
         $module_path = $this->config->paths->get('AdminBar');
         $module_url = $this->config->urls->get('AdminBar');
+        $theme_dir = 'themes/' . basename($this->theme) . '/';
         $version = self::getModuleInfo()['version'];
 
         // Add CSS files to output
-        foreach (['AdminBar.css', 'themes/' . basename($this->theme) . '/theme.css'] as $file) {
+        foreach (['AdminBar.css', $theme_dir . 'theme.css'] as $file) {
             if (is_file($module_path . $file)) {
                 $out .= '<link rel="stylesheet" href="' . $module_url . $file . '?v=' . $version . '">';
             }
         }
 
         // Add JS files to output
-        foreach (['AdminBar.js', 'themes/' . basename($this->theme) . '/theme.js'] as $file) {
+        foreach (['AdminBar.js', $theme_dir . 'theme.js'] as $file) {
             if (is_file($module_path . $file)) {
                 $out .= '<script type="text/javascript" src="' . $module_url . $file . '?v=' . $version . '"></script>';
             }
         }
 
+        // Load optional theme.php file
+        if (is_file($module_path . $theme_dir . 'theme.php')) {
+            include_once($module_path . $theme_dir . 'theme.php');
+        }
+
         // Create markup for Admin Bar.
-        $out .= $this->renderAdminBar([
+        $out .= $this->render([
             'page' => $page,
         ]);
 
@@ -194,7 +200,7 @@ OUT;
      * @param array $args Render arguments.
      * @return string Rendered Admin Bar HTML markup.
      */
-    public function ___renderAdminBar(array $args = []): string {
+    public function ___render(array $args = []): string {
 
         // Combine custom arguments with defaults.
         $args = array_merge([
@@ -221,19 +227,13 @@ OUT;
         }
 
         // Rendering templates.
-        $templates = [
-            'adminbar' => '<div id="adminbar" class="adminbar">%s</div>',
-            'list' => '<ul class="adminbar__list adminbar__list--%s">%s</ul>',
-            'list_item' => '<li class="adminbar__list-item adminbar__list-item--%s">%s</li>',
-            'link' => '<a class="adminbar__link adminbar__link--%s" href="%s">%s</a>',
-            'text' => '<span class="adminbar__text">%s</span>',
-        ];
+        $templates = $this->getTemplates();
 
         // Placeholder for output.
         $out = '';
 
         // Add items.
-        $items = $this->getAdminBarItems($args);
+        $items = $this->getItems($args);
         foreach (['left', 'right'] as $list) {
             $list_out = '';
             $list_items = $items[$list] ?? [];
@@ -241,11 +241,12 @@ OUT;
                 if (empty($item)) continue;
                 $list_out .= vsprintf($templates['list_item'], [
                     $key,
-                    is_array($item) ? vsprintf($templates['link'], $item) : sprintf($templates['text'], $item),
+                    is_array($item) ? vsprintf($templates[count($item) == 1 && isset($item['text']) ? 'text' : 'link'], $item)
+                                    : $item,
                 ]);
             }
             if (!empty($list_out)) {
-                $out .= sprintf($templates['list'], $list, $list_out);
+                $out .= sprintf($templates['list__' . $list], $list_out);
             }
         }
 
@@ -254,12 +255,28 @@ OUT;
     }
 
     /**
+     * Return template strings for rendering Admin Bar
+     *
+     * @return array Template strings.
+     */
+    protected function ___getTemplates(): array {
+        return [
+            'adminbar' => '<div id="adminbar" class="adminbar">%s</div>',
+            'list__left' => '<ul class="adminbar__list adminbar__list--left">%s</ul>',
+            'list__right' => '<ul class="adminbar__list adminbar__list--right">%s</ul>',
+            'list_item' => '<li class="adminbar__list-item adminbar__list-item--%s">%s</li>',
+            'link' => '<a class="adminbar__link adminbar__link--%s" href="%s">%s</a>',
+            'text' => '<span class="adminbar__text">%s</span>',
+        ];
+    }
+
+    /**
      * Return a list of items
      *
      * @param array $args Arguments.
      * @return array
      */
-    public function ___getAdminBarItems(array $args) {
+    protected function ___getItems(array $args) {
 
         // Array of items.
         $items = [
