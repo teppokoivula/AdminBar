@@ -37,7 +37,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
     static public function getDefaultData(): array {
         return [
             'showModal' => 1,
-            'theme' => 'default',
+            'theme' => 'uikit',
             'custom_theme' => '',
         ];
     }
@@ -153,11 +153,14 @@ OUT;
         $module_url = $this->config->urls->get('AdminBar');
         $theme_path = $module_path;
         $theme_url = $module_url;
-        $theme_dir = $this->custom_theme ?: 'themes/' . basename($this->theme) . '/';
+        if ($this->theme == 'custom' && !$this->custom_theme) {
+            $this->theme = 'uikit';
+        }
+        $theme_dir = $this->theme == 'custom' ? $this->custom_theme : 'themes/' . basename($this->theme) . '/';
         $version = self::getModuleInfo()['version'];
 
         // Process custom theme directory.
-        if ($this->custom_theme) {
+        if ($this->theme == 'custom') {
             $theme_path = $this->config->paths->site;
             $theme_url = $this->config->urls->site;
             $theme_dir = trim($theme_dir, '/') . '/';
@@ -394,45 +397,67 @@ OUT;
      * @param array $data
      * @return InputfieldWrapper
      */
-    static public function getModuleConfigInputfields(array $data): InputfieldWrapper {
+    public function getModuleConfigInputfields(array $data): InputfieldWrapper {
 
         // this is a container for fields, basically like a fieldset
         $fields = new InputfieldWrapper();
-
-        // since this is a static function, we can't use $this->modules, so get them from the global wire() function
-        $modules = wire('modules');
 
         // merge data array with defaults
         $data = array_merge(self::getDefaultData(), $data);
 
         // showModal field
-        $field = $modules->get('InputfieldCheckbox');
+        $field = $this->modules->get('InputfieldCheckbox');
         $field->name = 'showModal';
         $field->label = 'Use slide overlay';
+        $field->icon = 'window-maximize';
         $field->description = 'Whether clicking edit buttons shows slide view (overlay/modal) or goes to traditional admin.';
         $field->value = 1;
         $field->attr('checked', empty($data['showModal']) ? '' : 'checked');
         $fields->add($field);
 
         // theme selection
-        $field = $modules->get('InputfieldSelect');
+        $field = $this->modules->get('InputfieldSelect');
         $field->name = 'theme';
         $field->label = 'Theme';
+        $field->icon = 'paint-brush';
         $field->required = true;
         $field->description = 'Choose a theme to use for your Admin Bar.';
         $theme_directory = new \DirectoryIterator(__DIR__ . '/themes/');
         foreach ($theme_directory as $theme) {
-            if ($theme->isDir() && strpos($theme->getFilename(), '.') !== 0) {
-                $field->addOption($theme->getFilename());
+            if ($theme->isDir()) {
+                $theme_name = $theme->getFilename();
+                if (strpos($theme_name, '.') !== 0 && $theme_name != 'custom') {
+                    $field->addOption($theme_name);
+                }
             }
         }
+        $field->addOption('custom', 'custom ...');
         $field->value = $data['theme'];
         $fields->add($field);
 
+        // theme specific custom config
+        $config_file = $this->config->paths->get('AdminBar') . 'themes/' . basename($data['theme']) . '/config.php';
+        if ($data['theme'] == 'custom' && $data['custom_theme']) {
+            $config_file = $this->config->paths->site . trim($data['custom_theme'], '/') . '/config.php';
+        }
+        if (is_file($config_file)) {
+            $fieldset = $this->modules->get('InputfieldFieldset');
+            $fieldset->label = 'Settings for ' . basename($data['theme']) . ' theme';
+            $fieldset->icon = 'sliders';
+            include_once($config_file);
+            if ($fieldset->count()) {
+                $fields->add($fieldset);
+            }
+        }
+
         // custom theme
-        $field = $modules->get('InputfieldText');
+        $field = $this->modules->get('InputfieldText');
         $field->name = 'custom_theme';
         $field->label = 'Custom theme';
+        $field->icon = 'graduation-cap';
+        $field->showIf = 'theme=custom';
+        $field->required = true;
+        $field->requireIf = 'theme=custom';
         $field->description = 'If you want to use your own custom theme, fill this field (overrides theme selection above).';
         $field->notes = 'Type in the path to the directory containing theme.css (and optional theme.js and theme.php) file(s) for your theme. Path has to be relative to your site directory, such as /templates/my-adminbar-theme/.';
         $field->value = $data['custom_theme'];
