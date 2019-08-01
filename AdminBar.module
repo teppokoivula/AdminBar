@@ -38,6 +38,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
         return [
             'showModal' => 1,
             'theme' => 'default',
+            'custom_theme' => '',
         ];
     }
 
@@ -147,29 +148,38 @@ OUT;
         // Bail out early if there's no closing </body> tag.
         if (strpos($event->return, '</body') === false) return;
 
-        // Get module path, URL, and version for styles and scripts.
+        // Get paths, URLs, and version for styles and scripts.
         $module_path = $this->config->paths->get('AdminBar');
         $module_url = $this->config->urls->get('AdminBar');
-        $theme_dir = 'themes/' . basename($this->theme) . '/';
+        $theme_path = $module_path;
+        $theme_url = $module_url;
+        $theme_dir = $this->custom_theme ?: 'themes/' . basename($this->theme) . '/';
         $version = self::getModuleInfo()['version'];
 
+        // Process custom theme directory.
+        if ($this->custom_theme) {
+            $theme_path = $this->config->paths->site;
+            $theme_url = $this->config->urls->site;
+            $theme_dir = trim($theme_dir, '/') . '/';
+        }
+
         // Add CSS files to output
-        foreach (['AdminBar.css', $theme_dir . 'theme.css'] as $file) {
-            if (is_file($module_path . $file)) {
-                $out .= '<link rel="stylesheet" href="' . $module_url . $file . '?v=' . $version . '">';
+        foreach (['AdminBar.css', $theme_dir . 'theme.css'] as $key => $file) {
+            if (is_file(($key ? $theme_path : $module_path) . $file)) {
+                $out .= '<link rel="stylesheet" href="' . ($key ? $theme_url : $module_url) . $file . '?v=' . $version . '">';
             }
         }
 
         // Add JS files to output
-        foreach (['AdminBar.js', $theme_dir . 'theme.js'] as $file) {
-            if (is_file($module_path . $file)) {
-                $out .= '<script type="text/javascript" src="' . $module_url . $file . '?v=' . $version . '"></script>';
+        foreach (['AdminBar.js', $theme_dir . 'theme.js'] as $key => $file) {
+            if (is_file(($key ? $theme_path : $module_path) . $file)) {
+                $out .= '<script type="text/javascript" src="' . ($key ? $theme_url : $module_url) . $file . '?v=' . $version . '"></script>';
             }
         }
 
         // Load optional theme.php file
-        if (is_file($module_path . $theme_dir . 'theme.php')) {
-            include_once($module_path . $theme_dir . 'theme.php');
+        if (is_file($theme_path . $theme_dir . 'theme.php')) {
+            include_once($theme_path . $theme_dir . 'theme.php');
         }
 
         // Create markup for Admin Bar.
@@ -417,6 +427,15 @@ OUT;
             }
         }
         $field->value = $data['theme'];
+        $fields->add($field);
+
+        // custom theme
+        $field = $modules->get('InputfieldText');
+        $field->name = 'custom_theme';
+        $field->label = 'Custom theme';
+        $field->description = 'If you want to use your own custom theme, fill this field (overrides theme selection above).';
+        $field->notes = 'Type in the path to the directory containing theme.css (and optional theme.js and theme.php) file(s) for your theme. Path has to be relative to your site directory, such as /templates/my-adminbar-theme/.';
+        $field->value = $data['custom_theme'];
         $fields->add($field);
 
         return $fields;
