@@ -20,7 +20,17 @@ This module can be installed just like any other ProcessWire module: copy or clo
 containing this module to your /site/modules/ directory, log in, go to Admin > Modules, click
 "Check for new modules", and install "AdminBar".
 
-Alternatively you can use the module installer in ProcessWire's Admin to install the module.
+Alternatively you can use the module installer in ProcessWire's Admin or Composer to install this
+module. The module is available via Packagist for Composer installation as `teppokoivula/admin-bar`.
+
+### Requirements
+
+- ProcessWire >= 3.0.112
+- PHP >= 7.1.0
+
+If you're running an earlier version of ProcessWire or PHP, you can use the 1.1.5 release of this
+module instead. Note, though, that 1.x branch of the module is no longer supported, and as such it
+*may not* work as expected, and *will* lack some of the features available via the 2.x branch.
 
 ## Permissions
 
