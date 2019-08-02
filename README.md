@@ -5,7 +5,14 @@ This module provides easy front-end admin bar for editing page content in Proces
 
 ## Credits
 
-This module was originally developed by @apeisa. Additional development by Teppo Koivula.
+This module was originally developed by @apeisa, with additional development by Teppo Koivula.
+Credits for the bundled themes:
+
+- "Original" theme by @apeisa (https://github.com/apeisa)
+- "Tires" theme by @tires (https://processwire.com/talk/profile/2761-tires/), with Feather icons
+  by Cole Bemis (https://twitter.com/colebemis)
+- "Uikit" theme by Teppo Koivula (https://github.com/teppokoivula), based on ProcessWire Uikit
+  Admin Theme by Ryan Cramer (https://processwire.com)
 
 ## Installing the module
 
@@ -23,6 +30,21 @@ to AdminBar, please add permission "adminbar" to their role(s).
 If you are upgrading from an older version of AdminBar, you may need to uninstall and then reinstall
 the module in order to see that permission. Alternatively you can add this permission manually: just
 provide "adminbar" as the name of the permission (the label doesn't really matter).
+
+## Themes
+
+AdminBar comes with a selection of built-in themes. You can change the theme via module config, and
+if you want you can also create a custom theme of your own:
+
+1. Create directory for your custom theme anywhere under your site directory. This directory should
+   contain at least theme.css file, but you can also include theme.js, theme.php, and config.php.
+
+   *For examples on how theme files work, check out the uikit theme, found from the /themes/uikit/
+   directory within the AdminBar directory.*
+
+2. Select "Custom ..." option for theme in module config.
+3. Type into the "Custom theme" text input the path to the directory your custom theme's files are
+   located in. This path should be relative to (start from) your site directory.
 
 ## License
 

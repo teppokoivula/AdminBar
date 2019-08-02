@@ -1,0 +1,121 @@
+/*
+ * "Tires" theme
+ *
+ * Feather icons by Cole Bemis (ttps://twitter.com/colebemis)
+ *
+ * @author tires (https://processwire.com/talk/profile/2761-tires/)
+ * @see https://processwire.com/talk/topic/50-adminbar/?do=findComment&comment=182486
+ */
+
+.adminbar {
+	padding: 0 0 0 60px;
+	background: url(processwire.svg) no-repeat 20px center #eee;
+	background-size: 24px;
+    border: 0;
+	box-shadow: 0px 3px 5px 0px rgba(0,0,0,0.20);
+}
+
+.adminbar__list--right {
+	border: none;
+	background: none;
+}
+
+.adminbar__list-item {
+	display: block;
+	float: left;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	height: 40px;
+	border-right: 1px solid #bbb;
+    border-left: 0;
+}
+
+.adminbar__list--right .adminbar__list-item {
+	border-right: 0;
+}
+
+.adminbar__list-item:hover {
+	background: #ddd;
+}
+
+.adminbar__list--right .adminbar__list-item:hover {
+	text-decoration: none;
+	opacity: 1;
+	letter-spacing: 0;
+	background-color: transparent;
+}
+
+.adminbar__link,
+.adminbar__link:visited,
+.adminbar__text {
+	padding: 0 13px 0 39px;
+	font-family: arial, sans-serif;
+	color: #000;
+	opacity: .4;
+	background-size: 16px !important;
+    text-decoration: none;
+}
+
+.adminbar__link:hover {
+    text-decoration: none;
+}
+
+.adminbar__text {
+	background: url(lock.svg) no-repeat 12px  center;
+}
+
+.adminbar__link:first-child {
+    border-left: 0;
+}
+
+.adminbar__link:hover {
+	opacity: 1;
+	letter-spacing: 0;
+}
+
+.adminbar__list-item--active .adminbar__link,
+.adminbar__list-item--active:hover {
+	color: #000;
+	opacity: 1;
+}
+
+.adminbar__list-item--active,
+.adminbar__list-item--active:hover {
+	background: none;
+}
+
+.adminbar__list--right .adminbar__link {
+	padding: 0 13px 0 39px;
+	border-left: 1px solid #666;
+}
+
+.adminbar__list--right .adminbar__link:hover {
+	color: #000;
+	opacity: 1;
+	text-decoration: none;
+}
+
+.adminbar__link--admin {
+	background: url(settings.svg) no-repeat 12px  center;
+}
+
+.adminbar__link--logout {
+	background: url(log-out.svg) no-repeat 12px  center;
+}
+
+.adminbar__list-item--browse {
+	border-left: 1px solid #bbb;;
+}
+
+.adminbar__link--browse {
+	background: url(eye.svg) no-repeat 12px  center;
+}
+
+.adminbar__link--edit {
+	background: url(edit-2.svg) no-repeat 12px  center;
+}
+
+.adminbar__link--new {
+	background: url(plus-circle.svg) no-repeat 12px  center;
+}

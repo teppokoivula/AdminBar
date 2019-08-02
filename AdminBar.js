@@ -5,13 +5,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Store references to AdminBar elements.
     const adminbar = document.getElementById('adminbar');
-    const adminbar_browse = adminbar.querySelector('.browse a')
+    const adminbar_browse = adminbar.querySelector('.adminbar__link--browse')
+    adminbar_browse.parentNode.classList.add('adminbar__list-item--active');
 
     // Create container to use for modal window.
     const adminbar_modal = document.createElement('div');
-    adminbar_modal.setAttribute('id', 'ab-modal');
     adminbar_modal.setAttribute('data-active', 'browse');
-    adminbar_modal.classList.add('hidden');
+    adminbar_modal.classList.add('adminbar__modal');
+    adminbar_modal.classList.add('adminbar__modal--hidden');
     if (document.body.childNodes.length) {
         document.body.insertBefore(adminbar_modal, document.body.childNodes[0]);
     } else {
@@ -19,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Attach click handler to modal links.
-    adminbar.querySelectorAll('a.modal').forEach(function(item) {
+    adminbar.querySelectorAll('.adminbar__link--modal').forEach(function(item) {
         item.addEventListener('click', function(event) {
             event.preventDefault();
             const link = event.currentTarget;
@@ -29,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 // Inactive link: remove iframe (if exists) and open modal.
                 setActive(link);
-                adminbar_modal.classList.add('loading');
+                adminbar_modal.classList.add('adminbar__modal--loading');
                 adminbar_modal.querySelectorAll('iframe').forEach(function(item) {
                     item.parentNode.removeChild(item);
                 });
@@ -37,8 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Create new iframe to contain link target page.
                 const iframe = document.createElement('iframe');
-                iframe.setAttribute('name', 'ab_modal_iframe');
-                iframe.setAttribute('id', 'ab_modal_iframe');
+                iframe.classList.add('adminbar__iframe');
                 iframe.setAttribute('frameborder', 0);
                 iframe.setAttribute('src', link.getAttribute('href'));
                 adminbar_modal.appendChild(iframe);
@@ -54,40 +54,40 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Make a specific AdminBar link active, removing active state from all other links.
     function setActive(link) {
-        adminbar.querySelectorAll('li:not(.admin) a').forEach(function(item) {
-            item.parentElement.classList.remove('active');
+        adminbar.querySelectorAll('.adminbar__list-item').forEach(function(item) {
+            item.classList.remove('adminbar__list-item--active');
         });
-        link.parentElement.classList.add('active');
+        link.parentElement.classList.add('adminbar__list-item--active');
         adminbar.setAttribute('data-active', link.getAttribute('class'));
     }
 
     // Slide modal window down.
     function slideDown() {
-        adminbar_modal.classList.add('visible');
-        adminbar_modal.classList.remove('hidden');
+        adminbar_modal.classList.add('adminbar__modal--visible');
+        adminbar_modal.classList.remove('adminbar__modal--hidden');
         document.body.style.overflow = 'hidden';
     };
 
     // Slide modal window up.
     function slideUp(clean) {
         setActive(adminbar_browse);
-        adminbar_modal.classList.remove('loading');
+        adminbar_modal.classList.remove('adminbar__modal--loading');
         if (clean) {
             adminbar_modal.querySelectorAll('iframe').forEach(function(item) {
                 item.setAttribute('src', '');
                 item.parentNode.removeChild(item);
             });
         }
-        adminbar_modal.classList.remove('visible');
-        adminbar_modal.classList.add('hidden');
+        adminbar_modal.classList.remove('adminbar__modal--visible');
+        adminbar_modal.classList.add('adminbar__modal--hidden');
         document.body.style.overflow = 'auto';
     };
 
     // After page has been saved in modal window, close the modal.
-    const adminbar_page_saved = document.getElementById('ab-pagesaved');
+    const adminbar_page_saved = document.getElementById('adminbar-page-saved');
     if (adminbar_page_saved) {
         window.setTimeout(function() {
-            adminbar_page_saved.classList.add('hidden');
+            adminbar_page_saved.classList.add('adminbar__page-saved--hidden');
             window.setTimeout(function() {
                 adminbar_page_saved.parentNode.removeChild(adminbar_page_saved);
             }, 1500);

@@ -1,0 +1,70 @@
+/*
+ * "Original" theme
+ *
+ * @author apeisa (https://github.com/apeisa)
+ */
+
+.adminbar {
+    background: #fff url(sprite.png) repeat-x 0px 2px;
+    border: 0;
+}
+
+.adminbar__list-item {
+    border-right: 1px solid #dbdbdb;
+}
+
+.adminbar__link,
+.adminbar__link:visited,
+.adminbar__text {
+    color: #505050;
+    font-family: arial, sans-serif;
+    padding: 0 10px 0 36px;
+    text-decoration: none;
+}
+
+.adminbar__link:hover {
+    text-decoration: none;
+}
+
+.adminbar__list-item--active,
+.adminbar__list-item--active:hover {
+    background: url(sprite.png) repeat-x 0px -380px;
+}
+
+.adminbar__list--right .adminbar__list-item,
+.adminbar__list--right .adminbar__list-item:hover {
+    background: url(sprite.png) no-repeat -50px -42px;
+}
+
+.adminbar__list--right .adminbar__link {
+    border-left: 1px solid #bebebe;
+    padding: 0 10px;
+}
+
+.adminbar__list--right .adminbar__link:hover {
+    text-decoration: underline;
+}
+
+.adminbar__list-item--browse {
+    border-left: 1px solid #cecece;
+}
+
+.adminbar__link--browse {
+    background: transparent url(sprite.png) 10px -182px;
+}
+
+.adminbar__link--edit {
+    background: transparent url(sprite.png) 12px -97px;
+}
+
+.adminbar__link--new {
+    background: transparent url(sprite.png) 12px -140px;
+}
+
+.adminbar__text {
+    background: transparent url(sprite.png) 12px -327px;
+}
+
+.adminbar__list-item:hover {
+    background: #dde1e4;
+}
