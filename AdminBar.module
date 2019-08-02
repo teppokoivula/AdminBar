@@ -22,7 +22,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
             'title' => 'Admin Bar',
             'summary' => 'Fast and easy in-page content editing',
             'href' => 'http://modules.processwire.com/modules/admin-bar/',
-            'version' => '2.0.1',
+            'version' => '2.0.2',
             'permanent' => false,
             'autoload' => true,
             'singular' => true,
@@ -113,7 +113,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
     public function pageRender(HookEvent $event) {
 
         $page = $event->object;
-        if ($page->template == "form-builder") return;
+        if ($page->template == 'form-builder') return;
 
         if ($this->session->AB_pageSaved && $page->template == 'admin' && $this->input->get->modal) {
             // If we've saved a page and we're currently viewing an admin page in modal window,
@@ -151,6 +151,9 @@ OUT;
 
         // Bail out early if there's no closing </body> tag.
         if (strpos($event->return, '</body') === false) return;
+
+        // Placeholder for output.
+        $out = '';
 
         // Get paths, URLs, and version for styles and scripts.
         $module_path = $this->config->paths->get('AdminBar');
@@ -237,10 +240,11 @@ OUT;
         ], $args);
 
         // If only one template is allowed, we show it's label or name instead of default "page".
-        if (empty($args['template_title']) && count($page->template->childTemplates) == 1) {
-            $child_emplate = array_pop((array_values($page->template->childTemplates)));
+        if (empty($args['template_title']) && count($args['page']->template->childTemplates) == 1) {
+            $child_templates = array_values($args['page']->template->childTemplates);
+            $child_template = array_pop($child_templates);
             $label_language = $this->modules->isInstalled('LanguageSupport') && !$this->user->language->isDefault() ? $this->user->language : '';
-            $new_template_title = $this->templates->get($child_template)->get('label' . ($label_language ? $label_language . '|label' : '') . '|name');
+            $args['template_title'] = $this->templates->get($child_template)->get('label' . ($label_language ? $label_language . '|label' : '') . '|name');
         }
 
         // Rendering templates.
@@ -311,7 +315,7 @@ OUT;
                 'new' => $args['page']->addable() ? [
                     'class' => 'new ' . ($args['modal_class'] ?? ' '),
                     'link' => $this->config->urls->admin . 'page/add/?parent_id=' . $args['page']->id . $args['modal_get'],
-                    'text' => $args['strings']['new'] . ' ' . $template_title,
+                    'text' => $args['strings']['new'] . ' ' . $args['template_title'],
                 ] : null,
             ],
             'right' => [
