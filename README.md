@@ -11,8 +11,8 @@ Credits for the bundled themes:
 - "Original" theme by @apeisa (https://github.com/apeisa)
 - "Tires" theme by @tires (https://processwire.com/talk/profile/2761-tires/), with Feather icons
   by Cole Bemis (https://twitter.com/colebemis)
-- "Uikit" theme by Teppo Koivula ((https://github.com/teppokoivula), based on ProcessWire Uikit
-  Admin Theme by Ryan Cramer ((https://processwire.com))
+- "Uikit" theme by Teppo Koivula (https://github.com/teppokoivula), based on ProcessWire Uikit
+  Admin Theme by Ryan Cramer (https://processwire.com)
 
 ## Installing the module
 
