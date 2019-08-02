@@ -5,7 +5,14 @@ This module provides easy front-end admin bar for editing page content in Proces
 
 ## Credits
 
-This module was originally developed by @apeisa. Additional development by Teppo Koivula.
+This module was originally developed by @apeisa, with additional development by Teppo Koivula.
+Credits for the bundled themes:
+
+- "Original" theme by @apeisa (https://github.com/apeisa)
+- "Tires" theme by @tires (https://processwire.com/talk/profile/2761-tires/), with Feather icons
+  by Cole Bemis (https://twitter.com/colebemis)
+- "Uikit" theme by Teppo Koivula ((https://github.com/teppokoivula), based on ProcessWire Uikit
+  Admin Theme by Ryan Cramer ((https://processwire.com))
 
 ## Installing the module
 

@@ -1,3 +1,12 @@
+/*
+ * "Tires" theme
+ *
+ * Feather icons by Cole Bemis (ttps://twitter.com/colebemis)
+ *
+ * @author tires (https://processwire.com/talk/profile/2761-tires/)
+ * @see https://processwire.com/talk/topic/50-adminbar/?do=findComment&comment=182486
+ */
+
 .adminbar {
 	padding: 0 0 0 60px;
 	background: url(processwire.svg) no-repeat 20px center #eee;
