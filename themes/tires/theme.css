@@ -96,11 +96,11 @@
 	text-decoration: none;
 }
 
-.adminbar__link--admin {
+.adminbar__link--item-admin {
 	background: url(settings.svg) no-repeat 12px  center;
 }
 
-.adminbar__link--logout {
+.adminbar__link--item-logout {
 	background: url(log-out.svg) no-repeat 12px  center;
 }
 
@@ -108,14 +108,14 @@
 	border-left: 1px solid #bbb;;
 }
 
-.adminbar__link--browse {
+.adminbar__link--item-browse {
 	background: url(eye.svg) no-repeat 12px  center;
 }
 
-.adminbar__link--edit {
+.adminbar__link--item-edit {
 	background: url(edit-2.svg) no-repeat 12px  center;
 }
 
-.adminbar__link--new {
+.adminbar__link--item-new {
 	background: url(plus-circle.svg) no-repeat 12px  center;
 }

@@ -45,19 +45,19 @@
     text-decoration: underline;
 }
 
-.adminbar__list-item--browse {
+.adminbar__list-item--item-browse {
     border-left: 1px solid #cecece;
 }
 
-.adminbar__link--browse {
+.adminbar__link--item-browse {
     background: transparent url(sprite.png) 10px -182px;
 }
 
-.adminbar__link--edit {
+.adminbar__link--item-edit {
     background: transparent url(sprite.png) 12px -97px;
 }
 
-.adminbar__link--new {
+.adminbar__link--item-new {
     background: transparent url(sprite.png) 12px -140px;
 }
 

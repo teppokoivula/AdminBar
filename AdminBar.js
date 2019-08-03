@@ -5,8 +5,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Store references to AdminBar elements.
     const adminbar = document.getElementById('adminbar');
-    const adminbar_browse = adminbar.querySelector('.adminbar__link--browse')
+    const adminbar_browse = adminbar.querySelector('.adminbar__link--item-browse')
     adminbar_browse.parentNode.classList.add('adminbar__list-item--active');
+
+    // Make sure that our HTML element has proper padding.
+    if (adminbar.classList.contains('adminbar--auto-padding')) {
+        document.documentElement.style.paddingTop = adminbar.scrollHeight + 'px';
+        let resize_timeout = false;
+        window.addEventListener('resize', function(event) {
+            window.clearTimeout(resize_timeout);
+            resize_timeout = window.setTimeout(function() {
+                document.documentElement.style.paddingTop = adminbar.scrollHeight + 'px';
+            }, 150);
+        });
+    }
 
     // Create container to use for modal window.
     const adminbar_modal = document.createElement('div');
@@ -44,6 +56,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 adminbar_modal.appendChild(iframe);
             }
         });
+    });
+
+    // Add CSS class to items that don't contain a link
+    adminbar.querySelectorAll('.adminbar__list-item').forEach(function(item) {
+        if (!item.getElementsByTagName('a').length) {
+            item.classList.add('adminbar__list-item--linkless');
+        }
     });
 
     // Attach click handler to the browse link.

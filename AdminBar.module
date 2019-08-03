@@ -22,7 +22,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
             'title' => 'Admin Bar',
             'summary' => 'Fast and easy in-page content editing',
             'href' => 'http://modules.processwire.com/modules/admin-bar/',
-            'version' => '2.0.2',
+            'version' => '2.1.0',
             'permanent' => false,
             'autoload' => true,
             'singular' => true,
@@ -262,7 +262,7 @@ OUT;
                 if (empty($item)) continue;
                 $list_out .= vsprintf($templates['list_item'], [
                     $key,
-                    is_array($item) ? vsprintf($templates[count($item) == 1 && isset($item['text']) ? 'text' : 'link'], $item)
+                    is_array($item) ? vsprintf($templates[!isset($item['link']) ? 'text' : 'link'], $item)
                                     : $item,
                 ]);
             }
@@ -282,12 +282,12 @@ OUT;
      */
     protected function ___getTemplates(): array {
         return [
-            'adminbar' => '<div id="adminbar" class="adminbar">%s</div>',
+            'adminbar' => '<div id="adminbar" class="adminbar adminbar--auto-padding">%s</div>',
             'list__left' => '<ul class="adminbar__list adminbar__list--left">%s</ul>',
             'list__right' => '<ul class="adminbar__list adminbar__list--right">%s</ul>',
-            'list_item' => '<li class="adminbar__list-item adminbar__list-item--%s">%s</li>',
-            'link' => '<a class="adminbar__link adminbar__link--%s" href="%s">%s</a>',
-            'text' => '<span class="adminbar__text">%s</span>',
+            'list_item' => '<li class="adminbar__list-item adminbar__list-item--item-%s">%s</li>',
+            'link' => '<a class="adminbar__link adminbar__link--item-%s" href="%s">%s</a>',
+            'text' => '<span class="adminbar__text adminbar__text--item-%s">%s</span>',
         ];
     }
 
@@ -336,10 +336,12 @@ OUT;
         if (empty($items['left']['edit'])) {
             if (!$args['page']->editable()) {
                 $items['left']['edit'] = [
+                    'class' => 'edit adminbar__text--norights',
                     'text' => $args['strings']['norights'],
                 ];
             } else if ($args['page']->is(Page::statusLocked)) {
                 $items['left']['edit'] = [
+                    'class' => 'edit adminbar__text--locked',
                     'text' => $args['strings']['locked'],
                 ];
             }
