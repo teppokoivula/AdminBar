@@ -234,8 +234,8 @@ OUT;
                 'new' => $this->_('New'),
                 'logout' => $this->_('Logout'),
                 'admin' => $this->_('Admin'),
-                'locked' => $this->_('This page is locked.'),
-                'norights' => $this->_('No editing rights.'),
+                'locked' => $this->_('This page is locked'),
+                'norights' => $this->_('No editing rights'),
             ],
         ], $args);
 
