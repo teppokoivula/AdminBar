@@ -56,6 +56,26 @@ if you want you can also create a custom theme of your own:
 3. Type into the "Custom theme" text input the path to the directory your custom theme's files are
    located in. This path should be relative to (start from) your site directory.
 
+## Hooks
+
+As with any ProcessWire module, you can identify hookable methods by the three underscores before
+the method name: `___hookableMethod()`. Here are the details regarding typical "hooking points"
+provided by the AdminBar module:
+
+* `___render()`: this method renders the Admin Bar. You can hook _before_ it if you want to provide
+  custom arguments for the method (overriding strings etc.) or you can hook _after_ it if you want
+  to manually modify the returned output string.
+* `___getTemplates()`: this method returns the "template strings" used by the render method. These
+  are essentially the parts that make up the final markup, and if you want to modify the markup of
+  the Admin Bar, you can hook _after_ this method and modify the returned template strings array.
+* `___getData()`: this method returns the value of the data-adminbar attribute added to the Admin
+  Bar. If you need custom properties mainly for JavaScript use, you should hook _after_ this method
+  and modify the returned array of options.
+* `___getItems()`: this method returns a list of items displayed in the Admin Bar. You can modify
+  certain aspects of these items (strings/labels, use of modal links, etc.) by hooking _before_ this
+  method and modifying the args array – or if you want to modify the displayed items, you can hook
+  _after_ this method and modify the returned array of items.
+
 ## License
 
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU

@@ -69,14 +69,20 @@ html {
     color: rgba(255,255,255,.75);
 }
 
-.adminbar__img {
+.adminbar__logo {
     float: left;
     margin: 10px 15px 0 0;;
     width: 30px;
 }
 
+.adminbar__list-item--item-logo:after,
 .adminbar__list-item--linkless:after {
     display: none;
+}
+
+.adminbar__logo:focus,
+.adminbar__logo:hover {
+    filter: brightness(0) invert(1);
 }
 
 .adminbar__icon {
@@ -92,4 +98,23 @@ html {
 
 .adminbar__list-item:not(.adminbar__list-item--active):hover:not(.adminbar__list-item--linkless) .adminbar__icon path {
     fill: #add8e6;
+}
+
+.adminbar__modal {
+    top: 50px;
+}
+
+.adminbar__modal--visible {
+    height: calc(100vh - 50px);
+}
+
+.adminbar__page-saved {
+    background: #ffd;
+    border-bottom: 1px solid #f0f3f7;
+    color: #354b60;
+    font-size: 18px;
+    height: 60px;
+    line-height: 32px;
+    padding: 15px;
+    position: absolute;
 }
