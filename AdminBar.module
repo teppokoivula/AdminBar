@@ -40,9 +40,21 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
      */
     static public function getDefaultData(): array {
         return [
-            'showModal' => 1,
             'theme' => 'uikit',
             'custom_theme' => '',
+            'items' => [
+                'browse' => 'browse',
+                'edit' => 'edit',
+                'new' => 'new',
+                'logout' => 'logout',
+                'admin' => 'admin',
+            ],
+            'user_items' => [
+                'admin' => 'admin',
+                'profile' => 'profile',
+                'logout' => 'logout',
+            ],
+            'showModal' => 1,
         ];
     }
 
@@ -139,7 +151,6 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
             // If we've saved a page and we're currently viewing an admin page in modal window,
             // make a JS redirect and break out of modal (there seems to be no other way than JS).
             $redirect_url = rtrim($this->config->urls->root, '/') . $this->session->AB_pageSaved;
-            # die($redirect_url);
             die('<script>top.location.href = "' . $redirect_url . '";</script>');
         } else {
             // Delete our session var.
@@ -299,17 +310,7 @@ OUT;
         foreach (['left', 'right'] as $list) {
             $list_out = '';
             $list_items = $items[$list] ?? [];
-            foreach ($list_items as $key => $item) {
-                if (empty($item)) continue;
-                $list_out .= vsprintf($templates['list_item'], [
-                    $key,
-                    is_array($item) ? vsprintf($templates[!isset($item['link']) ? 'text' : 'link'], $item)
-                                    : $item,
-                ]);
-            }
-            if (!empty($list_out)) {
-                $out .= sprintf($templates['list__' . $list], $list_out);
-            }
+            $out .= $this->renderList($list_items, $list, $templates);
         }
 
         // Construct the data-adminbar attribute.
@@ -319,6 +320,55 @@ OUT;
 
         // Return final output.
         return sprintf($templates['adminbar'], $data, $out);
+    }
+
+    /**
+     * Render markup for a single Admin Bar item
+     *
+     * @param array $items Items as an array.
+     * @param string $list List name for fetching the correct template string.
+     * @param array $templates Template strings.
+     * @return string Rendered list markup, or empty string if no items were found.
+     */
+    protected function renderList(array $items, string $list, array $templates): string {
+
+        // Placeholder for output.
+        $out = '';
+
+        // Iterate the items array and render list items.
+        foreach ($items as $key => $item) {
+            if (empty($item)) continue;
+            $item_class = $key;
+            if ($list == 'children') {
+                $item_class .= ' adminbar__list-item--child';
+            }
+            $item_content = $item;
+            if (is_array($item)) {
+                $item_type = isset($item['link']) ? 'link' : 'text';
+                if (isset($item['class']) && $list == 'children') {
+                    $item['class'] .= ' adminbar__' . $item_type . '--child';
+                }
+                $item_content = vsprintf(
+                    $templates[$item_type],
+                    $item
+                );
+                if (!empty($item['children'])) {
+                    $item_class .= ' adminbar__list-item--has-children';
+                    $item_content .= $this->renderList($item['children'], 'children', $templates);
+                }
+            }
+            $out .= vsprintf($templates['list_item'], [
+                $item_class,
+                $item_content,
+            ]);
+        }
+
+        // Wrap items with the list template.
+        if (!empty($out)) {
+            $out = sprintf($templates['list__' . $list], $out);
+        }
+
+        return $out;
     }
 
     /**
@@ -335,6 +385,7 @@ OUT;
             'adminbar' => '<div id="adminbar" data-adminbar=\'%s\' class="adminbar adminbar--auto-padding">%s</div>',
             'list__left' => '<ul class="adminbar__list adminbar__list--left">%s</ul>',
             'list__right' => '<ul class="adminbar__list adminbar__list--right">%s</ul>',
+            'list__children' => '<ul class="adminbar__list adminbar__list--children">%s</ul>',
             'list_item' => '<li class="adminbar__list-item adminbar__list-item--item-%s">%s</li>',
             'link' => '<a class="adminbar__link adminbar__link--item-%s" href="%s">%s</a>',
             'text' => '<span class="adminbar__text adminbar__text--item-%s">%s</span>',
@@ -372,46 +423,61 @@ OUT;
         $modal = !empty($args['modal']) ? 'modal=1&ab_modal=1' : '';
         $modal_class = $modal ? ' ' . ($args['classes']['link--modal'] ?? '') : '';
 
+        // Reusable items.
+        $item_admin = [
+            'class' => 'admin',
+            'link' => $this->config->urls->admin . 'page/?open=' . $args['page']->id,
+            'text' => $args['strings']['admin'],
+        ];
+        $item_profile = [
+            'class' => 'profile' . $modal_class,
+            'link' => $this->config->urls->admin . 'profile/' . ($modal ? '?' . $modal : ''),
+            'text' => $args['strings']['profile'],
+        ];
+        $item_logout = [
+            'class' => 'logout',
+            'link' => $this->config->urls->admin . 'login/logout/',
+            'text' => $args['strings']['logout'],
+        ];
+
         // Array of items.
         $items = [
             'left' => [
-                'browse' => [
+                'browse' => in_array('browse', $this->items) ? [
                     'class' => 'browse',
                     'link' => '#',
                     'text' => $args['strings']['browse'],
-                ],
-                'edit' => $args['page']->editable() && !$args['page']->is(Page::statusLocked) ? [
+                ] : null,
+                'edit' => in_array('edit', $this->items) && $args['page']->editable() && !$args['page']->is(Page::statusLocked) ? [
                     'class' => 'edit' . $modal_class,
                     'link' => $this->config->urls->admin . 'page/edit/?id=' . $args['page']->id . ($modal ? '&' . $modal : ''),
                     'text' => $args['strings']['edit'],
                 ] : null,
-                'new' => $args['page']->addable() ? [
+                'new' => in_array('new', $this->items) && $args['page']->addable() ? [
                     'class' => 'new' . $modal_class,
                     'link' => $this->config->urls->admin . 'page/add/?parent_id=' . $args['page']->id . ($modal ? '&' . $modal : ''),
                     'text' => $args['strings']['new'] . ' ' . $args['template_title'],
                 ] : null,
             ],
             'right' => [
-                'logout' => [
-                    'class' => 'logout',
-                    'link' => $this->config->urls->admin . 'login/logout/',
-                    'text' => $args['strings']['logout'],
-                ],
-                'profile' => [
-                    'class' => 'profile' . $modal_class,
+                'logout' => in_array('logout', $this->items) ? $item_logout : null,
+                'profile' => in_array('profile', $this->items) ? $item_profile : null,
+                'user' => in_array('user', $this->items) ? [
+                    'class' => 'user' . $modal_class,
                     'link' => $this->config->urls->admin . 'profile/' . ($modal ? '?' . $modal : ''),
-                    'text' => $args['strings']['profile'],
-                ],
-                'admin' => [
-                    'class' => 'admin',
-                    'link' => $this->config->urls->admin . 'page/?open=' . $args['page']->id,
-                    'text' => $args['strings']['admin'],
-                ],
+                    'text' => ucfirst($this->wire('user')->name),
+                    'children' => array_filter([
+                        'admin' => in_array('admin', $this->user_items) ? $item_admin : null,
+                        'profile' => in_array('profile', $this->user_items) ? $item_profile : null,
+                        'logout' => in_array('logout', $this->user_items) ? $item_logout : null,
+                    ]),
+                ] : null,
+                'admin' => in_array('admin', $this->items) ? $item_admin : null,
             ],
         ];
 
         // If page is non-editable, provide additional details.
-        if (empty($items['left']['edit'])) {
+        if (in_array('edit', $this->items) && empty($items['left']['edit'])) {
             if (!$args['page']->editable()) {
                 $items['left']['edit'] = [
                     'class' => 'edit adminbar__text--norights',
@@ -543,6 +609,42 @@ OUT;
                 $fields->add($fieldset);
             }
         }
+
+        // Displayed item selection.
+        $field = $this->modules->get('InputfieldAsmSelect');
+        $field->name = 'items';
+        $field->label = 'Items displayed in the Admin Bar';
+        $field->icon = 'list';
+        $field->required = true;
+        $field->description = 'Choose the items to include in the Admin Bar.';
+        $items_available = [
+            'browse' => 'browse',
+            'edit' => 'edit',
+            'new' => 'new',
+            'logout' => 'logout',
+            'profile' => 'profile',
+            'user' => 'user',
+            'admin' => 'admin',
+        ];
+        $field->addOptions($items_available);
+        $field->value = $data['items'];
+        $fields->add($field);
+
+        // Displayed "user" dropdown item selection.
+        $field = $this->modules->get('InputfieldAsmSelect');
+        $field->name = 'user_items';
+        $field->label = 'Items displayed in the Admin Bar "user" dropdown menu.';
+        $field->icon = 'user-circle';
+        $field->description = 'Choose the items to include in the Admin Bar "user" dropdown menu.';
+        $field->showIf = 'items=user';
+        $user_items_available = [
+            'admin' => 'admin',
+            'profile' => 'profile',
+            'logout' => 'logout',
+        ];
+        $field->addOptions($user_items_available);
+        $field->value = $data['user_items'];
+        $fields->add($field);
 
         // Modal edit feature.
         $field = $this->modules->get('InputfieldCheckbox');

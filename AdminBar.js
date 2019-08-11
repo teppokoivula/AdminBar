@@ -31,8 +31,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         function adjustPositions() {
             document.documentElement.style.paddingTop = adminbar.scrollHeight + 'px';
-            adminbar_modal.style.top = adminbar.scrollHeight + 'px';
-            adminbar_modal.style.height = 'calc(100vh - ' + adminbar.scrollHeight + 'px)';
+            if (!adminbar_modal.classList.contains('adminbar__modal--hidden')) {
+                adminbar_modal.style.top = adminbar.scrollHeight + 'px';
+                adminbar_modal.style.height = 'calc(100vh - ' + adminbar.scrollHeight + 'px)';
+            }
         }
     }
 
@@ -82,7 +84,11 @@ document.addEventListener('DOMContentLoaded', function() {
             item.classList.remove('adminbar__list-item--active');
         });
         link.parentElement.classList.add('adminbar__list-item--active');
+        if (link.classList.contains('adminbar__link--child')) {
+            link.parentElement.parentElement.parentElement.classList.add('adminbar__list-item--active');
+        }
         adminbar.setAttribute('data-active', link.getAttribute('class'));
+        link.blur();
     }
 
     // Slide modal window down.
@@ -104,6 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         adminbar_modal.classList.remove('adminbar__modal--visible');
         adminbar_modal.classList.add('adminbar__modal--hidden');
+        adminbar_modal.removeAttribute('style');
         document.body.style.overflow = 'auto';
     };
 
