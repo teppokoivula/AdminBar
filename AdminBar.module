@@ -496,16 +496,6 @@ OUT;
         // Merge data array with defaults.
         $data = array_merge(self::getDefaultData(), $data);
 
-        // Modal edit feature.
-        $field = $this->modules->get('InputfieldCheckbox');
-        $field->name = 'showModal';
-        $field->label = 'Use slide overlay';
-        $field->icon = 'window-maximize';
-        $field->description = 'Whether clicking edit buttons shows slide view (overlay/modal) or goes to traditional admin.';
-        $field->value = 1;
-        $field->attr('checked', empty($data['showModal']) ? '' : 'checked');
-        $fields->add($field);
-
         // Theme selection.
         $field = $this->modules->get('InputfieldSelect');
         $field->name = 'theme';
@@ -546,13 +536,23 @@ OUT;
         }
         if (is_file($config_file)) {
             $fieldset = $this->modules->get('InputfieldFieldset');
-            $fieldset->label = 'Settings for ' . basename($data['theme']) . ' theme';
+            $fieldset->label = 'Settings for the ' . basename($data['theme']) . ' theme';
             $fieldset->icon = 'sliders';
             include_once($config_file);
             if ($fieldset->count()) {
                 $fields->add($fieldset);
             }
         }
+
+        // Modal edit feature.
+        $field = $this->modules->get('InputfieldCheckbox');
+        $field->name = 'showModal';
+        $field->label = 'Use slide overlay';
+        $field->icon = 'window-maximize';
+        $field->description = 'Whether clicking edit buttons shows slide view (overlay/modal) or goes to traditional admin.';
+        $field->value = 1;
+        $field->attr('checked', empty($data['showModal']) ? '' : 'checked');
+        $fields->add($field);
 
         return $fields;
     }
