@@ -545,7 +545,7 @@ OUT;
         if (!$this->input->get->modal) return;
         $url = $event->arguments(0);
         if (preg_match('/[?&]ab_modal=/', $url)) return;
-        $url .= (count($this->input->get) ? '&' : '?') . 'modal=1&ab_modal=1';
+        $url .= (strpos($url, '?') !== false ? '&' : '?') . 'modal=1&ab_modal=1';
         $event->arguments(0, $url);
     }
 
