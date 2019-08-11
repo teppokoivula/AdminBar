@@ -5,20 +5,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Store references to AdminBar elements.
     const adminbar = document.getElementById('adminbar');
+    const settings = JSON.parse(adminbar.getAttribute('data-adminbar'));
     const adminbar_browse = adminbar.querySelector('.adminbar__link--item-browse')
     adminbar_browse.parentNode.classList.add('adminbar__list-item--active');
-
-    // Make sure that our HTML element has proper padding.
-    if (adminbar.classList.contains('adminbar--auto-padding')) {
-        document.documentElement.style.paddingTop = adminbar.scrollHeight + 'px';
-        let resize_timeout = false;
-        window.addEventListener('resize', function(event) {
-            window.clearTimeout(resize_timeout);
-            resize_timeout = window.setTimeout(function() {
-                document.documentElement.style.paddingTop = adminbar.scrollHeight + 'px';
-            }, 150);
-        });
-    }
 
     // Create container to use for modal window.
     const adminbar_modal = document.createElement('div');
@@ -29,6 +18,24 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.insertBefore(adminbar_modal, document.body.childNodes[0]);
     } else {
         document.body.appendChild(adminbar_modal);
+    }
+
+    // Make sure that our HTML element has proper padding and the modal element is properly
+    // positioned.
+    if (adminbar.classList.contains('adminbar--auto-padding')) {
+        adjustPositions();
+        let resize_timeout = false;
+        window.addEventListener('resize', function(event) {
+            window.clearTimeout(resize_timeout);
+            resize_timeout = window.setTimeout(adjustPositions(), 150);
+        });
+        function adjustPositions() {
+            document.documentElement.style.paddingTop = adminbar.scrollHeight + 'px';
+            if (!adminbar_modal.classList.contains('adminbar__modal--hidden')) {
+                adminbar_modal.style.top = adminbar.scrollHeight + 'px';
+                adminbar_modal.style.height = 'calc(100vh - ' + adminbar.scrollHeight + 'px)';
+            }
+        }
     }
 
     // Attach click handler to modal links.
@@ -77,7 +84,11 @@ document.addEventListener('DOMContentLoaded', function() {
             item.classList.remove('adminbar__list-item--active');
         });
         link.parentElement.classList.add('adminbar__list-item--active');
+        if (link.classList.contains('adminbar__link--child')) {
+            link.parentElement.parentElement.parentElement.classList.add('adminbar__list-item--active');
+        }
         adminbar.setAttribute('data-active', link.getAttribute('class'));
+        link.blur();
     }
 
     // Slide modal window down.
@@ -99,6 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         adminbar_modal.classList.remove('adminbar__modal--visible');
         adminbar_modal.classList.add('adminbar__modal--hidden');
+        adminbar_modal.removeAttribute('style');
         document.body.style.overflow = 'auto';
     };
 

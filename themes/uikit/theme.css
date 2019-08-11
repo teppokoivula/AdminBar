@@ -17,6 +17,11 @@ html {
     padding: 0 15px;
 }
 
+.adminbar__list--children {
+    box-shadow: 0 1px 7px rgba(0,0,0,.175);
+    padding: 10px 0;
+}
+
 .adminbar__list-item {
     height: 50px;
     position: relative;
@@ -53,15 +58,48 @@ html {
     text-decoration: none;
 }
 
+.adminbar__link--child,
+.adminbar__link--child:visited,
+.adminbar__text--child {
+    font-size: 14px;
+}
+
+.adminbar__link:focus,
 .adminbar__link:hover {
     color: #add8e6;
     text-decoration: none;
 }
 
-.adminbar__list-item--active .adminbar__link,
-.adminbar__list-item--active .adminbar__link:visited,
-.adminbar__list-item--active:hover .adminbar__link,
-.adminbar__list-item--active:hover .adminbar__link:visited {
+.adminbar__list-item--child,
+.adminbar__link--child,
+.adminbar__link--child:visited,
+.adminbar__link--child:focus,
+.adminbar__link--child:hover,
+.adminbar__text--child {
+    color: #354b60 !important;
+    height: 35px;
+    line-height: 35px;
+}
+
+.adminbar__list-item--child {
+    height: 35px;
+}
+
+.adminbar__list-item--child path {
+    fill: #97aab4;
+}
+
+.adminbar__link--child:focus,
+.adminbar__link--child:hover,
+.adminbar__list-item--active > .adminbar__link--child,
+.adminbar__list-item--active > .adminbar__link--child:visited {
+    background: #e2e9ef;
+}
+
+.adminbar__list-item--active > .adminbar__link,
+.adminbar__list-item--active > .adminbar__link:visited,
+.adminbar__list-item--active:hover > .adminbar__link,
+.adminbar__list-item--active:hover > .adminbar__link:visited {
     color: #fff;
 }
 
@@ -69,14 +107,21 @@ html {
     color: rgba(255,255,255,.75);
 }
 
-.adminbar__img {
+.adminbar__logo {
     float: left;
     margin: 10px 15px 0 0;;
     width: 30px;
 }
 
+.adminbar__list-item--child:after,
+.adminbar__list-item--item-logo:after,
 .adminbar__list-item--linkless:after {
     display: none;
+}
+
+.adminbar__logo:focus,
+.adminbar__logo:hover {
+    filter: brightness(0) invert(1);
 }
 
 .adminbar__icon {
@@ -85,11 +130,36 @@ html {
     margin-right: 7px;
 }
 
+.adminbar__link--child .adminbar__icon {
+    height: 14px;
+    width: 14px;
+}
+
 .adminbar__list-item:not(.adminbar__list-item--linkless):hover .adminbar__icon,
 .adminbar__list-item--active .adminbar__icon {
     opacity: 1;
 }
 
-.adminbar__list-item:not(.adminbar__list-item--active):hover:not(.adminbar__list-item--linkless) .adminbar__icon path {
+.adminbar__list-item:not(.adminbar__list-item--child):not(.adminbar__list-item--active):hover:not(.adminbar__list-item--linkless) > .adminbar__link > .adminbar__icon path,
+.adminbar__list-item:not(.adminbar__list-item--child):not(.adminbar__list-item--active):hover:not(.adminbar__list-item--linkless) > .adminbar__text > .adminbar__icon path {
     fill: #add8e6;
+}
+
+.adminbar__modal {
+    top: 50px;
+}
+
+.adminbar__modal--visible {
+    height: calc(100vh - 50px);
+}
+
+.adminbar__page-saved {
+    background: #ffd;
+    border-bottom: 1px solid #f0f3f7;
+    color: #354b60;
+    font-size: 18px;
+    height: 60px;
+    line-height: 32px;
+    padding: 15px;
+    position: absolute;
 }

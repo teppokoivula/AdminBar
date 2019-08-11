@@ -27,6 +27,19 @@ html {
     float: right;
 }
 
+.adminbar__list--children {
+    background: #fff;
+    display: none;
+    min-width: 200px;
+    position: absolute;
+    z-index: 999;
+}
+
+.adminbar__list-item--has-children:focus-within .adminbar__list--children,
+.adminbar__list-item--has-children:hover .adminbar__list--children {
+    display: block;
+}
+
 .adminbar__list-item {
     display: inline-block;
     height: 40px;
@@ -35,12 +48,23 @@ html {
     padding: 0;
 }
 
+.adminbar__list-item--child {
+    display: block;
+    height: 30px;
+}
+
 .adminbar__link,
 .adminbar__text {
     display: inline-block;
     height: 40px;
     line-height: 42px;
     padding: 0 15px;
+}
+
+.adminbar__link--child,
+.adminbar__text--child {
+    color: #333;
+    display: block;
 }
 
 .adminbar__modal {
