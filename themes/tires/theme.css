@@ -6,13 +6,12 @@
  * @author tires (https://processwire.com/talk/profile/2761-tires/)
  * @see https://processwire.com/talk/topic/50-adminbar/?do=findComment&comment=182486
  */
-
 .adminbar {
 	padding: 0 0 0 60px;
 	background: url(processwire.svg) no-repeat 20px center #eee;
 	background-size: 24px;
-    border: 0;
-	box-shadow: 0px 3px 5px 0px rgba(0,0,0,0.20);
+	border: 0;
+	box-shadow: 0 3px 5px 0 rgba(0,0,0,.2);
 }
 
 .adminbar__list--right {
@@ -21,41 +20,51 @@
 }
 
 .adminbar__list-item {
+	display: block;
+	float: left;
+	list-style: none;
 	margin: 0;
 	padding: 0;
 	height: 40px;
 	border-right: 1px solid #bbb;
-    border-left: 0;
+	border-left: 0;
+	transition: all .6s;
+}
+
+.adminbar__list--left .adminbar__list-item:first-child {
+	border-left: 1px solid #bbb;
+}
+
+.adminbar__list-item--child {
+	float: none;
+	background: #eee;
 }
 
 .adminbar__list--right .adminbar__list-item {
 	border-right: 0;
+	border-left: 1px solid #bbb;
 }
 
 .adminbar__list-item:hover {
 	background: #ddd;
-}
-
-.adminbar__list--right .adminbar__list-item:hover {
 	text-decoration: none;
 	opacity: 1;
 	letter-spacing: 0;
-	background-color: transparent;
+	transition: all .6s;
 }
 
-.adminbar__link,
-.adminbar__link:visited,
-.adminbar__text {
+.adminbar__link, .adminbar__link:visited, .adminbar__text {
 	padding: 0 13px 0 39px;
 	font-family: arial, sans-serif;
 	color: #000;
 	opacity: .4;
 	background-size: 16px !important;
-    text-decoration: none;
+	text-decoration: none;
 }
 
 .adminbar__link:hover {
-    text-decoration: none;
+	text-decoration: none;  
+	opacity: 1;
 }
 
 .adminbar__text {
@@ -63,56 +72,90 @@
 }
 
 .adminbar__link:first-child {
-    border-left: 0;
+	border-left: 0;
 }
 
-.adminbar__link:hover {
-	opacity: 1;
-	letter-spacing: 0;
-}
-
-.adminbar__list-item--active .adminbar__link,
-.adminbar__list-item--active:hover {
-	color: #000;
+.adminbar__list-item--active .adminbar__link, .adminbar__list-item--active:hover {
 	opacity: 1;
 }
 
-.adminbar__list-item--active,
-.adminbar__list-item--active:hover {
+.adminbar__list-item--active, .adminbar__list-item--active:hover {
 	background: none;
 }
 
 .adminbar__list--right .adminbar__link {
 	padding: 0 13px 0 39px;
-	border-left: 1px solid #666;
+	border-left: 1px solid #bbb;
+}
+
+.adminbar__list-item--child .adminbar__link {
+	border-right: 1px solid #bbb;
+}
+
+.adminbar__list--children {
+	box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.20);
+	min-width: auto;
 }
 
 .adminbar__list--right .adminbar__link:hover {
-	color: #000;
 	opacity: 1;
 	text-decoration: none;
 }
 
 .adminbar__link--item-admin {
-	background: url(settings.svg) no-repeat 12px  center;
+	background: url(settings.svg) no-repeat 12px center;
 }
 
 .adminbar__link--item-logout {
-	background: url(log-out.svg) no-repeat 12px  center;
+	background: url(log-out.svg) no-repeat 12px center;
 }
 
 .adminbar__list-item--browse {
-	border-left: 1px solid #bbb;;
+	border-left: 1px solid #bbb;
 }
 
 .adminbar__link--item-browse {
-	background: url(eye.svg) no-repeat 12px  center;
+	background: url(eye.svg) no-repeat 12px center;
 }
 
 .adminbar__link--item-edit {
-	background: url(edit-2.svg) no-repeat 12px  center;
+	background: url(edit-2.svg) no-repeat 12px center;
 }
 
 .adminbar__link--item-new {
-	background: url(plus-circle.svg) no-repeat 12px  center;
+	background: url(plus-circle.svg) no-repeat 12px center;
+}
+
+.adminbar__link--item-profile {
+	background: url(user.svg) no-repeat 12px center;
+}
+
+.adminbar__link--item-user {
+	background: url(menu.svg) no-repeat 12px center;
+}
+
+.adminbar__link {
+	font-size: 1em;
+}
+
+/* Responsive */
+@media (max-width: 850px) {
+	.adminbar__list a {
+		overflow: hidden;
+		width: 0;
+		padding: 0 0 0 39px;
+	}
+
+	.adminbar__list--children {
+		margin-top: -8px;
+	}
+
+	.adminbar__list--right .adminbar__link {
+		padding: 0 0 0 39px;
+	}
+
+	.adminbar__list-item--child {
+		width: 40px;
+	}
+
 }

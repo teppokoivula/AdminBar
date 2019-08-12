@@ -30,10 +30,10 @@ document.addEventListener('DOMContentLoaded', function() {
             resize_timeout = window.setTimeout(adjustPositions(), 150);
         });
         function adjustPositions() {
-            document.documentElement.style.paddingTop = adminbar.scrollHeight + 'px';
+            document.documentElement.style.paddingTop = adminbar.offsetHeight + 'px';
             if (!adminbar_modal.classList.contains('adminbar__modal--hidden')) {
-                adminbar_modal.style.top = adminbar.scrollHeight + 'px';
-                adminbar_modal.style.height = 'calc(100vh - ' + adminbar.scrollHeight + 'px)';
+                adminbar_modal.style.top = adminbar.offsetHeight + 'px';
+                adminbar_modal.style.height = 'calc(100vh - ' + adminbar.offsetHeight + 'px)';
             }
         }
     }
