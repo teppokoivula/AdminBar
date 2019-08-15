@@ -113,6 +113,11 @@ html {
     width: 30px;
 }
 
+.adminbar__logo-img {
+    height: auto;
+    max-width: 100%;
+}
+
 .adminbar__list-item--child:after,
 .adminbar__list-item--item-logo:after,
 .adminbar__list-item--linkless:after {

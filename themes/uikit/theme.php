@@ -46,7 +46,7 @@ $this->addHookAfter('AdminBar::getItems', function(HookEvent $event) {
             if ($has_img) {
                 $items['left'] = [
                     'logo' => '<a class="adminbar__logo" href="' . $this->config->urls->admin . '">'
-                            . '<img src="' . $this->config->urls->AdminThemeUikit . $img . '" alt="" />'
+                            . '<img class="adminbar__logo-img" src="' . $this->config->urls->AdminThemeUikit . $img . '" alt="" />'
                             . '</a>',
                 ] + $items['left'];
             }
