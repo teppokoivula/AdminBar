@@ -9,6 +9,8 @@ $this->addHookAfter('AdminBar::getItems', function(HookEvent $event) {
     // Icons.
     $has_icons = is_null($this->theme_uikit_icons) ? 30 : $this->theme_uikit_icons;
     if ($has_icons) {
+
+        // Define the common part of each SVG icon, and then the icon-specific paths separately.
         $svg = '<svg class="adminbar__icon" aria-hidden="true" width="16" height="16" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg">%s</svg>';
         $icons = array_filter([
             'browse' => $has_icons == 10 || $has_icons == 30 ? '<path d="M1664 960q-152-236-381-353 61 104 61 225 0 185-131.5 316.5t-316.5 131.5-316.5-131.5-131.5-316.5q0-121 61-225-229 117-381 353 133 205 333.5 326.5t434.5 121.5 434.5-121.5 333.5-326.5zm-720-384q0-20-14-34t-34-14q-125 0-214.5 89.5t-89.5 214.5q0 20 14 34t34 14 34-14 14-34q0-86 61-147t147-61q20 0 34-14t14-34zm848 384q0 34-20 69-140 230-376.5 368.5t-499.5 138.5-499.5-139-376.5-368q-20-35-20-69t20-69q140-229 376.5-368t499.5-139 499.5 139 376.5 368q20 35 20 69z" fill="#fff"/>' : null,
@@ -19,25 +21,44 @@ $this->addHookAfter('AdminBar::getItems', function(HookEvent $event) {
             'profile' => $has_icons >= 20 ? '<path d="M1536 1399q0 109-62.5 187t-150.5 78h-854q-88 0-150.5-78t-62.5-187q0-85 8.5-160.5t31.5-152 58.5-131 94-89 134.5-34.5q131 128 313 128t313-128q76 0 134.5 34.5t94 89 58.5 131 31.5 152 8.5 160.5zm-256-887q0 159-112.5 271.5t-271.5 112.5-271.5-112.5-112.5-271.5 112.5-271.5 271.5-112.5 271.5 112.5 112.5 271.5z" fill="#fff"/>' : null,
             'logout' => $has_icons >= 20 ? '<path d="M1664 896q0 156-61 298t-164 245-245 164-298 61-298-61-245-164-164-245-61-298q0-182 80.5-343t226.5-270q43-32 95.5-25t83.5 50q32 42 24.5 94.5t-49.5 84.5q-98 74-151.5 181t-53.5 228q0 104 40.5 198.5t109.5 163.5 163.5 109.5 198.5 40.5 198.5-40.5 163.5-109.5 109.5-163.5 40.5-198.5q0-121-53.5-228t-151.5-181q-42-32-49.5-84.5t24.5-94.5q31-43 84-50t95 25q146 109 226.5 270t80.5 343zm-640-768v640q0 52-38 90t-90 38-90-38-38-90v-640q0-52 38-90t90-38 90 38 38 90z" fill="#fff"/>' : null,
         ]);
-        $add_icons = function(&$item, $key) use ($icons, $svg, &$add_icons) {
+
+        // Define the function used for applying icons for each Admin Bar item.
+        $user = $this->wire('user');
+        $user_icon = $this->theme_uikit_user_icon ?? 'default';
+        $add_icons = function(&$item, $key) use ($icons, $svg, &$add_icons, $user, $user_icon) {
             $path = $icons[$key] ?? null;
             if (!empty($item['text']) && !empty($path)) {
-                if ($key == 'edit' && empty($item['link'])) {
-                    $path = '<path d="M640 768h512v-192q0-106-75-181t-181-75-181 75-75 181v192zm832 96v576q0 40-28 68t-68 28h-960q-40 0-68-28t-28-68v-576q0-40 28-68t68-28h32v-192q0-184 132-316t316-132 316 132 132 316v192h32q40 0 68 28t28 68z" fill="#fff"/>';
+                if ($key == 'user' && $user_icon == 'gravatar') {
+
+                    // Use Gravatar?
+                    $url = "https://www.gravatar.com/avatar/" . md5(strtolower(trim($user->email))) . "?s=48&d=mm&r=g";
+                    $img = '<img class="adminbar__avatar" src="' . $url . '" alt="' . $user->name . '" />';
+                    $item['text'] = $img . $item['text'];
+                } else {
+
+                    // Show different icon (lock) for edit action if editing is disabled.
+                    if ($key == 'edit' && empty($item['link'])) {
+                        $path = '<path d="M640 768h512v-192q0-106-75-181t-181-75-181 75-75 181v192zm832 96v576q0 40-28 68t-68 28h-960q-40 0-68-28t-28-68v-576q0-40 28-68t68-28h32v-192q0-184 132-316t316-132 316 132 132 316v192h32q40 0 68 28t28 68z" fill="#fff"/>';
+                    }
+                    $item['text'] = sprintf($svg, $path) . $item['text'];
                 }
-                $item['text'] = sprintf($svg, $path) . $item['text'];
             }
+
+            // If the item has child items, they might have icons as well.
             if (!empty($item['children'])) {
                 array_walk($item['children'], $add_icons);
             }
         };
+
+        // First iterate Admin Bar items column by column with foreach, and then item by item with
+        // array_walk.
         foreach ($items as $key => $column) {
             array_walk($column, $add_icons);
             $items[$key] = $column;
         }
     }
 
-    // ProcessWire mark/icon.
+    // ProcessWire logo/mark/icon.
     $theme_path = $this->config->paths->AdminThemeUikit;
     if ($theme_path) {
         $img = 'uikit/custom/images/pw-mark.png';

@@ -22,7 +22,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
             'title' => 'Admin Bar',
             'summary' => 'Fast and easy in-page content editing',
             'href' => 'https://modules.processwire.com/modules/admin-bar/',
-            'version' => '2.2.2',
+            'version' => '2.3.0',
             'permanent' => false,
             'autoload' => true,
             'singular' => true,

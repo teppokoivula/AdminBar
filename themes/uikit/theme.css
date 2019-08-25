@@ -150,6 +150,14 @@ html {
     fill: #add8e6;
 }
 
+.adminbar__avatar {
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    margin-bottom: -6px;
+    margin-right: 7px;
+}
+
 .adminbar__modal {
     top: 50px;
 }
