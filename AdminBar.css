@@ -53,12 +53,35 @@ html {
     height: 30px;
 }
 
+.adminbar__form,
+.adminbar__button,
+.adminbar__html,
 .adminbar__link,
 .adminbar__text {
+    border: 0;
+    background: transparent;
     display: inline-block;
+    font-size: 1em;
     height: 40px;
     line-height: 40px;
+    margin: 0;
     padding: 0 15px;
+}
+
+.adminbar__html,
+.adminbar__form {
+    padding: 0;
+}
+
+.adminbar__button {
+    cursor: pointer;
+}
+
+.adminbar__list-item--child .adminbar__form,
+.adminbar__list-item--child .adminbar__button {
+    display: block;
+    text-align: left;
+    width: 100%;
 }
 
 .adminbar__link--child,

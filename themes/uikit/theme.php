@@ -27,20 +27,31 @@ $this->addHookAfter('AdminBar::getItems', function(HookEvent $event) {
         $user_icon = $this->theme_uikit_user_icon ?? 'default';
         $add_icons = function(&$item, $key) use ($icons, $svg, &$add_icons, $user, $user_icon) {
             $path = $icons[$key] ?? null;
-            if (!empty($item['text']) && !empty($path)) {
+            if ((!empty($item['text']) || $key == 'logout' && !empty($item['html'])) && !empty($path)) {
                 if ($key == 'user' && $user_icon == 'gravatar') {
 
                     // Use Gravatar?
                     $url = "https://www.gravatar.com/avatar/" . md5(strtolower(trim($user->email))) . "?s=48&d=mm&r=g";
                     $img = '<img class="adminbar__avatar" src="' . $url . '" alt="' . $user->name . '" />';
                     $item['text'] = $img . $item['text'];
-                } else {
+
+                } else if ($key == 'logout') {
+
+                    // Logout is a form, so icon needs some additional styles.
+                    $item['html'] = preg_replace(
+                        '/<button.*?type="submit".*?>/i',
+                        '$0' . sprintf($svg, $path),
+                        $item['html']
+                    );
+
+            } else {
 
                     // Show different icon (lock) for edit action if editing is disabled.
                     if ($key == 'edit' && empty($item['link'])) {
                         $path = '<path d="M640 768h512v-192q0-106-75-181t-181-75-181 75-75 181v192zm832 96v576q0 40-28 68t-68 28h-960q-40 0-68-28t-28-68v-576q0-40 28-68t68-28h32v-192q0-184 132-316t316-132 316 132 132 316v192h32q40 0 68 28t28 68z" fill="#fff"/>';
                     }
                     $item['text'] = sprintf($svg, $path) . $item['text'];
+
                 }
             }
 

@@ -367,7 +367,7 @@ HTML,
             }
             $item_content = $item;
             if (is_array($item)) {
-                $item_type = isset($item['link']) ? 'link' : 'text';
+                $item_type = isset($item['html']) ? 'html' : (isset($item['link']) ? 'link' : 'text');
                 if (isset($item['class']) && $list == 'children') {
                     $item['class'] .= ' adminbar__' . $item_type . '--child';
                 }
@@ -412,6 +412,7 @@ HTML,
             'list_item' => '<li class="adminbar__list-item adminbar__list-item--item-%s">%s</li>',
             'link' => '<a class="adminbar__link adminbar__link--item-%s" href="%s">%s</a>',
             'text' => '<span class="adminbar__text adminbar__text--item-%s">%s</span>',
+            'html' => '<span class="adminbar__html adminbar__html--item-%s">%s</span>',
         ];
     }
 
@@ -459,8 +460,9 @@ HTML,
         ];
         $item_logout = [
             'class' => 'logout',
-            'link' => $this->config->urls->admin . 'login/logout/',
-            'text' => $args['strings']['logout'],
+            'html' => '<form class="adminbar__form" action="' . $this->config->urls->admin . 'login/logout/">'
+                    . '<button class="adminbar__button" type="submit">' . $args['strings']['logout'] . '</button>'
+                    . '</form>',
         ];
 
         // Array of items.
