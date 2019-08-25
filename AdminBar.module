@@ -159,7 +159,25 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
 
         // Remove "view" and "children" buttons from modal admin view.
         if ($this->input->get->modal) {
-            $out = <<<OUT
+
+            // First pass: hide with CSS (to prevent flashing content).
+            $event->return = str_ireplace(
+                '<form id="ProcessPageEdit"',
+                <<<HTML
+                <style>
+                #_ProcessPageEditView, #_ProcessPageEditChildren {
+                    display: none;
+                }
+                </style>
+                <form id="ProcessPageEdit"
+                HTML,
+                $event->return
+            );
+
+            // Second pass: remove from markup with JavaScipt.
+            $event->return = str_ireplace(
+                '</body>',
+                <<<HTML
 <script>
 ['_ProcessPageEditView', '_ProcessPageEditChildren'].forEach(function(remove_id) {
     const remove_tab = document.getElementById(remove_id);
@@ -168,8 +186,10 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
 const wrap_template = document.getElementById('wrap_template');
 if (wrap_template) wrap_template.style.display = 'none';
 </script>
-OUT;
-            $event->return = str_ireplace('</body>', $out . '</body>', $event->return);
+</body>
+HTML,
+                $event->return
+            );
         }
     }
 
