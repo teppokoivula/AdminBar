@@ -164,13 +164,13 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
             $event->return = str_ireplace(
                 '<form id="ProcessPageEdit"',
                 <<<HTML
-                <style>
-                #_ProcessPageEditView, #_ProcessPageEditChildren {
-                    display: none;
-                }
-                </style>
-                <form id="ProcessPageEdit"
-                HTML,
+<style>
+#_ProcessPageEditView, #_ProcessPageEditChildren {
+    display: none;
+}
+</style>
+<form id="ProcessPageEdit"
+HTML,
                 $event->return
             );
 
