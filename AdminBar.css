@@ -84,6 +84,7 @@ html {
     width: 100%;
 }
 
+.adminbar__html--child,
 .adminbar__link--child,
 .adminbar__text--child {
     color: #333;
