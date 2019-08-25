@@ -1,15 +1,16 @@
 <?php namespace ProcessWire;
 
-// show ProcessWire logo image?
+// Show ProcessWire logo image?
 $field = $this->modules->get('InputfieldCheckbox');
 $field->name = 'theme_uikit_img';
-$field->label = 'Show ProcessWire logo image';
-$field->notes = 'Logo is displayed on the left side of the Admin Bar, and doubles as an additional "Admin" link.';
+$field->label = 'Show ProcessWire logo image?';
+$field->label2 = 'Show ProcessWire logo image';
+$field->description = 'Logo is displayed on the left side of the Admin Bar, and doubles as an additional "Admin" link.';
 $field->value = 1;
 $field->checked = $data[$field->name] ?? true;
 $fieldset->add($field);
 
-// use icons?
+// Use icons?
 $field = $this->modules->get('InputfieldSelect');
 $field->name = 'theme_uikit_icons';
 $field->label = 'Use icons';
@@ -25,7 +26,7 @@ $field->addOptions([
 $field->value = $data[$field->name] ?? 30;
 $fieldset->add($field);
 
-// user icon style
+// Choose the user icon style.
 $field = $this->modules->get('InputfieldSelect');
 $field->name = 'theme_uikit_user_icon';
 $field->label = 'User icon';
