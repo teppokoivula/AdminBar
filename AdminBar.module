@@ -359,6 +359,9 @@ HTML,
         foreach ($items as $key => $item) {
             if (empty($item)) continue;
             $item_class = $key;
+            if ($key == 'browse') {
+                $item_class .= ' adminbar__list-item--active';
+            }
             if ($list == 'children') {
                 $item_class .= ' adminbar__list-item--child';
             }
