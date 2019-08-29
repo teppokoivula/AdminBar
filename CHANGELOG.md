@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.0] - 2019-08-29
+
 ### Added
 - Gravatar image support for the "user" item in Admin Bar.
 - Support for sorting Admin Bar items manually with the AsmSelect field in module config.
