@@ -508,20 +508,20 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
                     }, $column_items)
                 )
             );
-        }
 
-        // If page is non-editable, provide additional details.
-        if (in_array('edit', $this->items) && empty($items['left']['edit'])) {
-            if (!$args['page']->editable()) {
-                $items['left']['edit'] = [
-                    'class' => 'edit adminbar__text--norights',
-                    'text' => $args['strings']['norights'],
-                ];
-            } else if ($args['page']->is(Page::statusLocked)) {
-                $items['left']['edit'] = [
-                    'class' => 'edit adminbar__text--locked',
-                    'text' => $args['strings']['locked'],
-                ];
+            // If page is non-editable, provide additional details.
+            if (in_array('edit', $column_items) && empty($items[$column]['edit'])) {
+                if (!$args['page']->editable()) {
+                    $items[$column]['edit'] = [
+                        'class' => 'edit adminbar__text--norights',
+                        'text' => $args['strings']['norights'],
+                    ];
+                } else if ($args['page']->is(Page::statusLocked)) {
+                    $items[$column]['edit'] = [
+                        'class' => 'edit adminbar__text--locked',
+                        'text' => $args['strings']['locked'],
+                    ];
+                }
             }
         }
 

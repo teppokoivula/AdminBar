@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.2] - 2019-08-29
+
+### Fixed
+- Fixed an issue related to array handling in case of non-editable page item labels.
+
+### Changed
+- Made uikit theme CSS styles more resilient in regards for different site styles.
+
 ## [2.3.1] - 2019-08-29
 
 ### Fixed
