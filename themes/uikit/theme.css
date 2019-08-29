@@ -32,6 +32,7 @@ html {
     background: transparent;
 }
 
+.adminbar__button:hover:after,
 .adminbar__list-item--active:after,
 .adminbar__list-item:hover:after {
     content: "";
@@ -47,9 +48,13 @@ html {
     z-index: 99;
 }
 
+.adminbar__form,
+.adminbar__button,
 .adminbar__link,
 .adminbar__link:visited,
 .adminbar__text {
+    background: transparent;
+    border: 0;
     color: rgba(255,255,255,.7);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     font-size: 16px;
@@ -58,18 +63,22 @@ html {
     text-decoration: none;
 }
 
+.adminbar__list-item--child .adminbar__button,
 .adminbar__link--child,
 .adminbar__link--child:visited,
 .adminbar__text--child {
     font-size: 14px;
 }
 
+.adminbar__button:focus,
+.adminbar__button:hover,
 .adminbar__link:focus,
 .adminbar__link:hover {
     color: #add8e6;
     text-decoration: none;
 }
 
+.adminbar__list-item--child .adminbar__button,
 .adminbar__list-item--child,
 .adminbar__link--child,
 .adminbar__link--child:visited,
@@ -89,6 +98,8 @@ html {
     fill: #97aab4;
 }
 
+.adminbar__list-item--child .adminbar__button:hover,
+.adminbar__list-item--child .adminbar__button:focus,
 .adminbar__link--child:focus,
 .adminbar__link--child:hover,
 .adminbar__list-item--active > .adminbar__link--child,
@@ -118,6 +129,7 @@ html {
     max-width: 100%;
 }
 
+.adminbar__list-item--child .adminbar__button:after,
 .adminbar__list-item--child:after,
 .adminbar__list-item--item-logo:after,
 .adminbar__list-item--linkless:after {
@@ -140,14 +152,28 @@ html {
     width: 14px;
 }
 
+.adminbar__button:focus .adminbar__icon,
+.adminbar__link:focus .adminbar__icon,
+.adminbar__button:hover .adminbar__icon,
 .adminbar__list-item:not(.adminbar__list-item--linkless):hover .adminbar__icon,
 .adminbar__list-item--active .adminbar__icon {
     opacity: 1;
 }
 
+.adminbar__list-item:not(.adminbar__list-item--child):not(.adminbar__list-item--active) > .adminbar__html > .adminbar__form > .adminbar__button:focus path,
+.adminbar__list-item:not(.adminbar__list-item--child):not(.adminbar__list-item--active):not(.adminbar__list-item--linkless) > .adminbar__link:focus > .adminbar__icon path,
+.adminbar__list-item:not(.adminbar__list-item--child):not(.adminbar__list-item--active):hover > .adminbar__html > .adminbar__form > .adminbar__button path,
 .adminbar__list-item:not(.adminbar__list-item--child):not(.adminbar__list-item--active):hover:not(.adminbar__list-item--linkless) > .adminbar__link > .adminbar__icon path,
 .adminbar__list-item:not(.adminbar__list-item--child):not(.adminbar__list-item--active):hover:not(.adminbar__list-item--linkless) > .adminbar__text > .adminbar__icon path {
     fill: #add8e6;
+}
+
+.adminbar__avatar {
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    margin-bottom: -6px;
+    margin-right: 7px;
 }
 
 .adminbar__modal {

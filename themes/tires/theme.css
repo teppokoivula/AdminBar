@@ -53,7 +53,7 @@
 	transition: all .6s;
 }
 
-.adminbar__link, .adminbar__link:visited, .adminbar__text {
+.adminbar__button, .adminbar__link, .adminbar__link:visited, .adminbar__text {
 	padding: 0 13px 0 39px;
 	font-family: arial, sans-serif;
 	color: #000;
@@ -62,7 +62,7 @@
 	text-decoration: none;
 }
 
-.adminbar__link:hover {
+.adminbar__button:hover, .adminbar__link:hover {
 	text-decoration: none;  
 	opacity: 1;
 }
@@ -106,7 +106,7 @@
 	background: url(settings.svg) no-repeat 12px center;
 }
 
-.adminbar__link--item-logout {
+.adminbar__html--item-logout .adminbar__button {
 	background: url(log-out.svg) no-repeat 12px center;
 }
 
@@ -134,12 +134,9 @@
 	background: url(menu.svg) no-repeat 12px center;
 }
 
-.adminbar__link {
-	font-size: 1em;
-}
-
 /* Responsive */
 @media (max-width: 850px) {
+	.adminbar__list button,
 	.adminbar__list a {
 		overflow: hidden;
 		width: 0;
@@ -150,6 +147,7 @@
 		margin-top: -8px;
 	}
 
+	.adminbar__list--right .adminbar__button,
 	.adminbar__list--right .adminbar__link {
 		padding: 0 0 0 39px;
 	}

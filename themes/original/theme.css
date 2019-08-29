@@ -13,6 +13,7 @@
     border-right: 1px solid #dbdbdb;
 }
 
+.adminbar__button,
 .adminbar__link,
 .adminbar__link:visited,
 .adminbar__text {
@@ -31,16 +32,22 @@
     background: url(sprite.png) repeat-x 0px -380px;
 }
 
+.adminbar__list-item--child {
+    height: 40px;
+}
+
 .adminbar__list--right .adminbar__list-item,
 .adminbar__list--right .adminbar__list-item:hover {
     background: url(sprite.png) no-repeat -50px -42px;
 }
 
+.adminbar__list--right .adminbar__button,
 .adminbar__list--right .adminbar__link {
     border-left: 1px solid #bebebe;
     padding: 0 10px;
 }
 
+.adminbar__list--right .adminbar__button:hover,
 .adminbar__list--right .adminbar__link:hover {
     text-decoration: underline;
 }
