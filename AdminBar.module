@@ -22,7 +22,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
             'title' => 'Admin Bar',
             'summary' => 'Fast and easy in-page content editing',
             'href' => 'https://modules.processwire.com/modules/admin-bar/',
-            'version' => '2.3.0',
+            'version' => '2.3.1',
             'permanent' => false,
             'autoload' => true,
             'singular' => true,
@@ -165,31 +165,28 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
             // First pass: hide with CSS (to prevent flashing content).
             $event->return = str_ireplace(
                 '<form id="ProcessPageEdit"',
-                <<<HTML
-<style>
-#_ProcessPageEditView, #_ProcessPageEditChildren {
-    display: none;
-}
-</style>
-<form id="ProcessPageEdit"
-HTML,
+                '<style>
+                #_ProcessPageEditView,
+                #_ProcessPageEditChildren {
+                    display: none;
+                }
+                </style>
+                <form id="ProcessPageEdit"',
                 $event->return
             );
 
             // Second pass: remove from markup with JavaScipt.
             $event->return = str_ireplace(
                 '</body>',
-                <<<HTML
-<script>
-['_ProcessPageEditView', '_ProcessPageEditChildren'].forEach(function(remove_id) {
-    const remove_tab = document.getElementById(remove_id);
-    if (remove_tab) remove_tab.parentNode.removeChild(remove_tab);
-});
-const wrap_template = document.getElementById('wrap_template');
-if (wrap_template) wrap_template.style.display = 'none';
-</script>
-</body>
-HTML,
+                '<script>
+                ["_ProcessPageEditView", "_ProcessPageEditChildren"].forEach(function(remove_id) {
+                    const remove_tab = document.getElementById(remove_id);
+                    if (remove_tab) remove_tab.parentNode.removeChild(remove_tab);
+                });
+                const wrap_template = document.getElementById("wrap_template");
+                if (wrap_template) wrap_template.style.display = "none";
+                </script>
+                </body>',
                 $event->return
             );
         }
@@ -316,8 +313,8 @@ HTML,
             ],
         ], $args);
 
-        // If only one template is allowed, we show it's label or name instead of default "page".
-        if (empty($args['template_title']) && count($args['page']->template->childTemplates) == 1) {
+        $p = $args['page'];
+        if (empty($args['template_title']) && count($p->template->childTemplates) == 1) {
             $child_templates = array_values($args['page']->template->childTemplates);
             $child_template = array_pop($child_templates);
             $label_language = $this->modules->isInstalled('LanguageSupport') && !$this->user->language->isDefault() ? $this->user->language : '';

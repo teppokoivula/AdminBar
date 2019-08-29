@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.1] - 2019-08-29
+
+### Fixed
+- Fixed a syntax issue caused by incorrect heredoc usage.
+
 ## [2.3.0] - 2019-08-29
 
 ### Added
