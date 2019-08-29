@@ -313,8 +313,8 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
             ],
         ], $args);
 
-        $p = $args['page'];
-        if (empty($args['template_title']) && count($p->template->childTemplates) == 1) {
+        // If only one template is allowed, we show it's label or name instead of default "page".
+        if (empty($args['template_title']) && count($args['page']->template->childTemplates) == 1) {
             $child_templates = array_values($args['page']->template->childTemplates);
             $child_template = array_pop($child_templates);
             $label_language = $this->modules->isInstalled('LanguageSupport') && !$this->user->language->isDefault() ? $this->user->language : '';
