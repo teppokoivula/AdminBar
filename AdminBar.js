@@ -6,8 +6,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Store references to AdminBar elements.
     const adminbar = document.getElementById('adminbar');
     const settings = JSON.parse(adminbar.getAttribute('data-adminbar'));
-    const adminbar_browse = adminbar.querySelector('.adminbar__link--item-browse')
+    const adminbar_browse = adminbar.querySelector('.adminbar__link--item-browse');
     adminbar_browse.parentNode.classList.add('adminbar__list-item--active');
+
+    // Store references to items that have the data-adminbar property defined.
+    const adminbar_adjust = document.querySelectorAll('[data-adminbar-adjust]');
 
     // Create container to use for modal window.
     const adminbar_modal = document.createElement('div');
@@ -21,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Make sure that our HTML element has proper padding and the modal element is properly
-    // positioned.
+    // positioned, and adjust HTML elements that have the data-adminbar-adjust attribute.
     if (adminbar.classList.contains('adminbar--auto-padding')) {
         adjustPositions();
         let resize_timeout = false;
@@ -34,6 +37,18 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!adminbar_modal.classList.contains('adminbar__modal--hidden')) {
                 adminbar_modal.style.top = adminbar.offsetHeight + 'px';
                 adminbar_modal.style.height = 'calc(100vh - ' + adminbar.offsetHeight + 'px)';
+            }
+            if (adminbar_adjust.length) {
+                adminbar_adjust.forEach(function(item) {
+                    const props = item.getAttribute('data-adminbar-adjust').split(' ');
+                    const abofh = adminbar.offsetHeight + 'px';
+                    if (props.indexOf('top') > -1) {
+                        item.style.top = abofh;
+                    }
+                    if (props.indexOf('max-height') > -1) {
+                        item.style.maxHeight = 'calc(100% - ' + abofh + ')';
+                    }
+                });
             }
         }
     }

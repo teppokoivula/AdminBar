@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.4.0] - 2019-09-18
+
+### Added
+- Support for `data-adminbar-adjust` property for any frontend element. More details in README.md.
+
 ## [2.3.2] - 2019-08-29
 
 ### Fixed

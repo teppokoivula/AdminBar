@@ -76,6 +76,25 @@ provided by the AdminBar module:
   method and modifying the args array – or if you want to modify the displayed items, you can hook
   _after_ this method and modify the returned array of items.
 
+## Frontend utilities
+
+You can use the `data-adminbar-adjust` attribute to control behaviour of frontend elements while
+Admin Bar is enabled/displayed. This attribute should contain a space-separated list of CSS
+properties that should be modified when Admin Bar height is recalculated.
+
+Example and supported values:
+
+```
+<div data-adminbar-adjust="top max-height"></div>
+```
+
+Adjustments are applied as inline CSS styles. Assuming that the height of the Admin Bar was 100px
+at the time of calculation, the example above would result in...
+
+```
+<div style="top: 100px; max-height: calc(100% - 100px);" data-adminbar-adjust="top max-height"></div>
+```
+
 ## License
 
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU
