@@ -76,6 +76,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 iframe.setAttribute('frameborder', 0);
                 iframe.setAttribute('src', link.getAttribute('href'));
                 adminbar_modal.appendChild(iframe);
+
+                // Check if we need to inject jQuery. This is required by certain ProcessWire
+                // Admin features (modal.js in particular).
+                if (!window.jQuery) {
+                    const script = document.createElement('script');
+                    script.src = settings.urls.modules + 'Jquery/JqueryCore/JqueryCore.js';
+                    document.body.appendChild(script);
+                }
             }
         });
     });
