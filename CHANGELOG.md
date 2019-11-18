@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.4.2] - 2019-11-18
+
+### Fixed
+- Fixed a potential issues with site styles interfering with AdminBar elements.
+
 ## [2.4.1] - 2019-10-13
 
 ### Fixed

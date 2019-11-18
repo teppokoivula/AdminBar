@@ -16,6 +16,11 @@ html {
     z-index: 999;
 }
 
+.adminbar ::before,
+.adminbar ::after {
+    display: none;
+}
+
 .adminbar__list {
     display: flex;
     flex-wrap: wrap;
@@ -62,6 +67,7 @@ html {
     background: transparent;
     display: inline-block;
     font-size: 1em;
+    font-weight: normal;
     height: 40px;
     line-height: 40px;
     margin: 0;

@@ -32,10 +32,11 @@ html {
     background: transparent;
 }
 
-.adminbar__button:hover:after,
-.adminbar__list-item--active:after,
-.adminbar__list-item:hover:after {
+.adminbar__button:hover::after,
+.adminbar__list-item--active::after,
+.adminbar__list-item:hover::after {
     content: "";
+    display: block;
     width: 0;
     height: 0;
     border-style: solid;
@@ -129,10 +130,14 @@ html {
     max-width: 100%;
 }
 
-.adminbar__list-item--child .adminbar__button:after,
-.adminbar__list-item--child:after,
-.adminbar__list-item--item-logo:after,
-.adminbar__list-item--linkless:after {
+.adminbar__list-item--child .adminbar__button::after,
+.adminbar__list-item--child .adminbar__button:hover::after,
+.adminbar__list-item--child::after,
+.adminbar__list-item--child:hover::after,
+.adminbar__list-item--item-logo::after,
+.adminbar__list-item--item-logo:hover::after,
+.adminbar__list-item--linkless::after,
+.adminbar__list-item--linkles:hover::after {
     display: none;
 }
 
