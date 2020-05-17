@@ -5,8 +5,8 @@
  *
  * This module provides easy front-end admin bar for editing page content in ProcessWire.
  *
- * @copyright 2011-2019 @apeisa & Teppo Koivula
- * @license http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License, version 2
+ * @copyright 2011-2020 @apeisa & Teppo Koivula
+ * @license https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt GNU General Public License, version 2
  */
 class AdminBar extends WireData implements Module, ConfigurableModule {
 
@@ -22,7 +22,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
             'title' => 'Admin Bar',
             'summary' => 'Fast and easy in-page content editing',
             'href' => 'https://modules.processwire.com/modules/admin-bar/',
-            'version' => '2.4.2',
+            'version' => '2.5.0',
             'permanent' => false,
             'autoload' => true,
             'singular' => true,
@@ -57,6 +57,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
                 'logout' => 'logout',
             ],
             'showModal' => 1,
+            'stickyModal' => 0,
         ];
     }
 
@@ -149,7 +150,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
 
         $page = $event->object;
 
-        if ($this->session->AB_pageSaved && $this->input->get->modal) {
+        if ($this->session->AB_pageSaved && $this->input->get->modal && !$this->stickyModal) {
             // If we've saved a page and we're currently viewing an admin page in modal window,
             // make a JS redirect and break out of modal (there seems to be no other way than JS).
             $redirect_url = rtrim($this->config->urls->root, '/') . $this->session->AB_pageSaved;
@@ -688,7 +689,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
             'logout' => 'logout',
         ];
         $field->addOptions($user_items_available);
-        $field->value = $data['user_items'];
+        $field->value = $data[$field->name];
         $fields->add($field);
 
         // Modal edit feature.
@@ -697,8 +698,21 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
         $field->label = 'Use slide overlay';
         $field->icon = 'window-maximize';
         $field->description = 'Whether clicking edit buttons shows slide view (overlay/modal) or goes to traditional admin.';
+        $field->columnWidth = 50;
         $field->value = 1;
-        $field->attr('checked', empty($data['showModal']) ? '' : 'checked');
+        $field->attr('checked', empty($data[$field->name]) ? '' : 'checked');
+        $fields->add($field);
+
+        // Keep modal open after page has been saved?
+        $field = $this->modules->get('InputfieldCheckbox');
+        $field->name = 'stickyModal';
+        $field->label = 'Keep slide overlay open after page is saved?';
+        $field->description = 'By default slide overlay is closed after page has been saved. With this option enabled it remains open instead.';
+        $field->icon = 'thumb-tack';
+        $field->showIf = 'showModal=1';
+        $field->columnWidth = 50;
+        $field->value = 1;
+        $field->attr('checked', empty($data[$field->name]) ? '' : 'checked');
         $fields->add($field);
 
         return $fields;
