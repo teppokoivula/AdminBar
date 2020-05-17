@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.0] - 2020-05-17
+
+### Added
+- New module config setting for disabling Admin Bar when the site is in debug mode.
+- New hookable method AdminBar::isEnabled() for programmatically enabling/disabling Admin Bar.
+
 ## [2.5.0] - 2020-05-17
 
 ### Added

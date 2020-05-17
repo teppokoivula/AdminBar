@@ -22,7 +22,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
             'title' => 'Admin Bar',
             'summary' => 'Fast and easy in-page content editing',
             'href' => 'https://modules.processwire.com/modules/admin-bar/',
-            'version' => '2.5.0',
+            'version' => '2.6.0',
             'permanent' => false,
             'autoload' => true,
             'singular' => true,
@@ -56,6 +56,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
                 'profile' => 'profile',
                 'logout' => 'logout',
             ],
+            'disable_for_debug_mode' => 0,
             'showModal' => 1,
             'stickyModal' => 0,
         ];
@@ -90,15 +91,11 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
      */
     public function init() {
 
-        // Bail out early if current user is guest (not logged in).
-        if ($this->user->isGuest()) {
-            return false;
-        }
-
-        // Store a reference to  adminbar permission, and bail out early if current user doesn't
-        // have said permission.
+        // Store a reference to the adminbar permission
         $this->ab_permission = $this->permissions->get('adminbar');
-        if (!$this->user->hasPermission($this->ab_permission)) {
+
+        // Bail out early if any conditions for disabling Admin Bar apply
+        if (!$this->isEnabled()) {
             return false;
         }
 
@@ -118,8 +115,8 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
      */
     public function ready() {
 
-        // Bail out early if current user doesn't have access to Admin Bar.
-        if ($this->user->isGuest() || !$this->user->hasPermission($this->ab_permission)) {
+        // Bail out early if any conditions for disabling Admin Bar apply
+        if (!$this->isEnabled()) {
             return false;
         }
 
@@ -139,6 +136,31 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
 
         // Hook before a redirect occurs, so that we can modify the redirect URL.
         $this->session->addHookBefore('redirect', $this, 'sessionRedirect');
+    }
+
+    /**
+     * Is Admin Bar enabled?
+     *
+     * @return bool
+     */
+    public function ___isEnabled(): bool {
+
+        // Disable for guest users
+        if ($this->user->isGuest()) {
+            return false;
+        }
+
+        // Optionally disable when the site is in debug mode
+        if ($this->disable_for_debug_mode && $this->config->debug) {
+            return false;
+        }
+
+        // Disable if current user doesn't have the adminbar permission
+        if (!$this->user->hasPermission($this->ab_permission)) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -706,7 +728,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
         // Keep modal open after page has been saved?
         $field = $this->modules->get('InputfieldCheckbox');
         $field->name = 'stickyModal';
-        $field->label = 'Keep slide overlay open after page is saved?';
+        $field->label = 'Keep slide overlay open after page is saved';
         $field->description = 'By default slide overlay is closed after page has been saved. With this option enabled it remains open instead.';
         $field->icon = 'thumb-tack';
         $field->showIf = 'showModal=1';
@@ -714,6 +736,21 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
         $field->value = 1;
         $field->attr('checked', empty($data[$field->name]) ? '' : 'checked');
         $fields->add($field);
+
+        // Disable settings.
+        $fieldset = $this->modules->get('InputfieldFieldset');
+        $fieldset->label = 'Conditions for disabling Admin Bar';
+        $fieldset->description = 'There may be specific conditions under which you prefer to disable Admin Bar. Those can be configured here.';
+        $fieldset->icon = 'ban';
+        $fields->add($fieldset);
+
+        // Disable AdminBar when the site is in debug mode?
+        $field = $this->modules->get('InputfieldCheckbox');
+        $field->name = 'disable_for_debug_mode';
+        $field->label = 'Disable Admin Bar when the site is in debug mode';
+        $field->value = 1;
+        $field->attr('checked', empty($data[$field->name]) ? '' : 'checked');
+        $fieldset->add($field);
 
         return $fields;
     }
