@@ -22,7 +22,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
             'title' => 'Admin Bar',
             'summary' => 'Fast and easy in-page content editing',
             'href' => 'https://modules.processwire.com/modules/admin-bar/',
-            'version' => '2.6.0',
+            'version' => '2.6.1',
             'permanent' => false,
             'autoload' => true,
             'singular' => true,
@@ -338,10 +338,13 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
 
         // If only one template is allowed, we show it's label or name instead of default "page".
         if (empty($args['template_title']) && count($args['page']->template->childTemplates) == 1) {
-            $child_templates = array_values($args['page']->template->childTemplates);
-            $child_template = array_pop($child_templates);
-            $label_language = $this->modules->isInstalled('LanguageSupport') && !$this->user->language->isDefault() ? $this->user->language : '';
-            $args['template_title'] = $this->templates->get($child_template)->get('label' . ($label_language ? $label_language . '|label' : '') . '|name');
+            $child_template_ids = array_values($args['page']->template->childTemplates);
+            $child_template_id = array_pop($child_template_ids);
+            $child_template = $this->templates->get((int) $child_template_id);
+            if ($child_template) {
+                $label_language = $this->modules->isInstalled('LanguageSupport') && !$this->user->language->isDefault() ? $this->user->language : '';
+                $args['template_title'] = $child_template->get('label' . ($label_language ? $label_language . '|label' : '') . '|name');
+            }
         }
 
         // Rendering templates.
@@ -350,7 +353,6 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
         // Add items.
         $items = $this->getItems($args);
         foreach (['left', 'right'] as $list) {
-            $list_out = '';
             $list_items = $items[$list] ?? [];
             $out .= $this->renderList($list_items, $list, $templates);
         }
