@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.2] - 2020-08-05
+
+### Fixed
+- Fixed a redirect issue occurring when a page with Repeater items was saved.
+
 ## [2.6.1] - 2020-07-28
 
 ### Fixed
