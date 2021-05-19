@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.7.0] - 2021-05-19
+
+### Added
+- Added new hookable method AdminBar::isEnabledFor() for programmatically enabling/disabling Admin Bar for specific page.
+
+### Changed
+- Moved form-builder Page / template check to AdminBar::isEnabledFor().
+
 ## [2.6.2] - 2020-08-05
 
 ### Fixed

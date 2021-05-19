@@ -22,7 +22,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
             'title' => 'Admin Bar',
             'summary' => 'Fast and easy in-page content editing',
             'href' => 'https://modules.processwire.com/modules/admin-bar/',
-            'version' => '2.6.2',
+            'version' => '2.7.0',
             'permanent' => false,
             'autoload' => true,
             'singular' => true,
@@ -164,6 +164,20 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
     }
 
     /**
+     * Is Admin Bar enabled for given page?
+     *
+     * @param Page $page
+     * @return bool
+     */
+    protected function ___isEnabledFor(Page $page): bool {
+        // Bail out early if current template belongs to Form Builder.
+        if ($page->template == "form-builder") {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Hook called when admin page is rendered
      *
      * @param HookEvent $event
@@ -225,9 +239,8 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
 
         $page = $event->object;
 
-        // Bail out early if current template belongs to Form Builder.
-        // @todo Replace this with a "skip templates" config setting.
-        if ($page->template == 'form-builder') {
+        // Check if Admin Bar is enabled for current Page.
+        if (!$this->isEnabledFor($page)) {
             return;
         }
 
