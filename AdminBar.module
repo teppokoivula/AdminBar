@@ -5,7 +5,7 @@
  *
  * This module provides easy front-end admin bar for editing page content in ProcessWire.
  *
- * @copyright 2011-2020 @apeisa & Teppo Koivula
+ * @copyright 2011-2022 @apeisa & Teppo Koivula
  * @license https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt GNU General Public License, version 2
  */
 class AdminBar extends WireData implements Module, ConfigurableModule {
@@ -22,7 +22,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
             'title' => 'Admin Bar',
             'summary' => 'Fast and easy in-page content editing',
             'href' => 'https://modules.processwire.com/modules/admin-bar/',
-            'version' => '2.7.0',
+            'version' => '2.7.1',
             'permanent' => false,
             'autoload' => true,
             'singular' => true,
@@ -125,6 +125,9 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
             return false;
         }
 
+        // Hook after page added in order to keep track of new pages.
+        $this->pages->addHookAfter('added', $this, 'pageAdded');
+
         // Hook after page save in order to store information into session.
         $this->pages->addHookAfter('save', $this, 'pageSave');
 
@@ -184,17 +187,15 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
      */
     public function adminPageRender(HookEvent $event) {
 
-        $page = $event->object;
-
+        // If we've saved a page and we're currently viewing an admin page in modal window,
+        // make a JS redirect and break out of modal (there seems to be no other way than JS).
         if ($this->session->AB_pageSaved && $this->input->get->modal && !$this->stickyModal) {
-            // If we've saved a page and we're currently viewing an admin page in modal window,
-            // make a JS redirect and break out of modal (there seems to be no other way than JS).
             $redirect_url = rtrim($this->config->urls->root, '/') . $this->session->AB_pageSaved;
             die('<script>top.location.href = "' . $redirect_url . '";</script>');
-        } else {
-            // Delete our session var.
-            $this->session->remove('AB_pageSaved');
         }
+
+        // Delete our session var.
+        $this->session->remove('AB_pageSaved');
 
         // Remove "view" and "children" buttons from modal admin view.
         if ($this->input->get->modal) {
@@ -580,7 +581,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
 
         // If creating a new page, then we do not add AB_pageSaved session var. This also prevents
         // redirect and keeps the modal window alive.
-        if (!$page->is(Page::statusUnpublished) && !($page instanceof RepeaterPage) && $page->template != 'user' && $page->template != 'admin') {
+        if (!$page->_ab_added && !($page instanceof RepeaterPage) && $page->template != 'user' && $page->template != 'admin') {
             $this->session->AB_pageSaved = $page->path;
         }
 
@@ -590,6 +591,20 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
             $this->session->AB_pageSaved = $this->session->AB_parentPage;
             $this->session->AB_pageRemove = $page->title;
         }
+    }
+
+    /**
+     * Hook to take place after page is added
+     *
+     * This method adds _ab_added property to new pages, which allows us to detect newly added pages
+     * later on in the code. Note that the core adds separate _added property since PW 3.0.127, but
+     * since it is undocumented, at least for now we'll duplicate the same behaviour here.
+     *
+     * @param HookEvent $event
+     */
+    public function pageAdded(HookEvent $event) {
+        $page = $event->arguments[0];
+        $page->setQuietly('_ab_added', true);
     }
 
     /**
