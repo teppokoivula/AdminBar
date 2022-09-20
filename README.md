@@ -14,6 +14,9 @@ Credits for the bundled themes:
 - "Uikit" theme by Teppo Koivula (https://github.com/teppokoivula), based on ProcessWire Uikit
   Admin Theme by Ryan Cramer (https://processwire.com)
 
+SVG loading icon (loading.svg) is from https://github.com/n3r4zzurr0/svg-spinners, copyright Utkarsh
+Verma and licensed under The MIT License (MIT).
+
 ## Installing the module
 
 This module can be installed just like any other ProcessWire module: copy or clone the directory
@@ -59,9 +62,13 @@ if you want you can also create a custom theme of your own:
 ## Hooks
 
 As with any ProcessWire module, you can identify hookable methods by the three underscores before
-the method name: `___hookableMethod()`. Here are the details regarding typical "hooking points"
-provided by the AdminBar module:
+the method name: `___hookableMethod()`. Here are the details for most common hookable methods in
+the AdminBar module/class:
 
+* `___isEnabled()`: this method returns a boolean that defines if AdminBar should be enabled (i.e.
+  displayed) for current request.
+* `___isEnabledFor(Page $page)`: this method returns a boolean that defines if AdminBar should be
+  enabled for provided page.
 * `___render()`: this method renders the Admin Bar. You can hook _before_ it if you want to provide
   custom arguments for the method (overriding strings etc.) or you can hook _after_ it if you want
   to manually modify the returned output string.

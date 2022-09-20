@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.7.2] - 2022-09-20
+
+### Changed
+- New SVG loading animation for AdminBar iframe, README updates, and some loosely related CSS updates.
+
 ## [2.7.1] - 2022-06-16
 
 ### Fixed
