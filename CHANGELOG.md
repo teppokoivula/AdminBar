@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.0] - 2023-03-30
+
+### Added
+- Added new static flag AdminBar::$showBar for disabling AdminBar programmatically without the use of hooks.
+
 ## [2.7.2] - 2022-09-20
 
 ### Changed

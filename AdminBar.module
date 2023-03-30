@@ -11,6 +11,13 @@
 class AdminBar extends WireData implements Module, ConfigurableModule {
 
     /**
+     * Flag for disabling the admin bar
+     *
+     * @var bool
+     */
+    public static $showBar = true;
+
+    /**
      * Basic information for this module
      *
      * See /wire/core/Module.php for more details.
@@ -22,7 +29,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
             'title' => 'Admin Bar',
             'summary' => 'Fast and easy in-page content editing',
             'href' => 'https://processwire.com/modules/admin-bar/',
-            'version' => '2.7.2',
+            'version' => '2.8.0',
             'permanent' => false,
             'autoload' => true,
             'singular' => true,
@@ -148,6 +155,11 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
      */
     public function ___isEnabled(): bool {
 
+        // Disable if the static flag is set to false
+        if (!self::$showBar) {
+            return false;
+        }
+
         // Disable for guest users
         if ($this->user->isGuest()) {
             return false;
@@ -173,10 +185,17 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
      * @return bool
      */
     protected function ___isEnabledFor(Page $page): bool {
+
+        // Disable if the static flag is set to false
+        if (!self::$showBar) {
+            return false;
+        }
+
         // Bail out early if current template belongs to Form Builder.
         if ($page->template == "form-builder") {
             return false;
         }
+
         return true;
     }
 
