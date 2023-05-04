@@ -68,16 +68,17 @@ $this->addHookAfter('AdminBar::getItems', function(HookEvent $event) {
     // ProcessWire logo/mark/icon.
     $theme_path = $this->config->paths->AdminThemeUikit;
     if ($theme_path) {
-        $img = 'uikit/custom/images/pw-mark.png';
-        if (is_file($theme_path . $img)) {
-            $has_img = is_null($this->theme_uikit_img) ? 1 : $this->theme_uikit_img;
-            if ($has_img) {
-                $items['left'] = [
-                    'logo' => '<a class="adminbar__logo" href="' . $this->config->urls->admin . '">'
-                            . '<img class="adminbar__logo-img" src="' . $this->config->urls->AdminThemeUikit . $img . '" alt="" />'
-                            . '</a>',
-                ] + $items['left'];
+        $has_img = is_null($this->theme_uikit_img) ? 1 : $this->theme_uikit_img;
+        if ($has_img) {
+            $img = 'uikit-pw/images/pw-mark.png';
+            if (!is_file($theme_path . $img)) {
+                $img = 'uikit/custom/images/pw-mark.png';
             }
+            $items['left'] = [
+                'logo' => '<a class="adminbar__logo" href="' . $this->config->urls->admin . '">'
+                    . '<img class="adminbar__logo-img" src="' . $this->config->urls->AdminThemeUikit . $img . '" alt="" />'
+                    . '</a>',
+            ] + $items['left'];
         }
     }
 

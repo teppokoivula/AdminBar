@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.1] - 2023-05-04
+
+### Fixed
+- Fixed the path of ProcessWire logo image; default to new path (3.0.178+) with a fallback for earlier one.
+
 ## [2.8.0] - 2023-03-30
 
 ### Added
