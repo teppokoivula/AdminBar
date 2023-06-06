@@ -132,9 +132,9 @@ html {
     background: #fff;
     color: #333;
     position: absolute;
-    top: 0px;
-    left: 0px;
-    right: 0px;
+    top: 0;
+    left: 0;
+    right: 0;
     height: 40px;
     line-height: 40px;
     text-align: center;
