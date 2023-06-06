@@ -53,6 +53,28 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Adjust AdminBar z-index value if needed.
+    const z_index_selector = '.tracy-panel[style*="top: "]';
+    if (document.querySelector(z_index_selector)) {
+        const z_index_default = window.getComputedStyle(adminbar).zIndex
+        adjustZIndex();
+        let z_index_timeout = false;
+        window.addEventListener('resize', function(event) {
+            window.clearTimeout(z_index_timeout);
+            z_index_timeout = window.setTimeout(adjustZIndex(), 150);
+        });
+        function adjustZIndex() {
+            let z_index = z_index_default;
+            document.querySelectorAll(z_index_selector).forEach(function(node) {
+                if (!node.style.zIndex || node.style.zIndex <= z_index) return;
+                z_index = node.style.zIndex;
+            });
+            if (z_index > z_index_default) {
+                adminbar.style.zIndex = z_index - 1;
+            }
+        }
+    }
+
     // Attach click handler to modal links.
     adminbar.querySelectorAll('.adminbar__link--modal').forEach(function(item) {
         item.addEventListener('click', function(event) {

@@ -16,6 +16,10 @@ html {
     z-index: 999;
 }
 
+.has-tracy-debugbar .adminbar {
+    z-index: 101;
+}
+
 .adminbar ::before,
 .adminbar ::after {
     display: none;
