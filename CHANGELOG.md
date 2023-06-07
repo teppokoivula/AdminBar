@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.3] - 2023-06-07
+
+### Changed
+- Removed JavaScript related to Tracy Debugger z-index adjustment.
+
 ## [2.8.2] - 2023-06-06
 
 ### Added
