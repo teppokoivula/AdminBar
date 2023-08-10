@@ -29,7 +29,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
             'title' => 'Admin Bar',
             'summary' => 'Fast and easy in-page content editing',
             'href' => 'https://processwire.com/modules/admin-bar/',
-            'version' => '2.8.3',
+            'version' => '2.8.4',
             'permanent' => false,
             'autoload' => true,
             'singular' => true,
@@ -64,6 +64,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
                 'logout' => 'logout',
             ],
             'disable_for_debug_mode' => 0,
+            'disable_duplicate_bars' => 1,
             'showModal' => 1,
             'stickyModal' => 0,
         ];
@@ -269,6 +270,13 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
 
         // Bail out early if there's no closing </body> tag.
         if (strpos($event->return, '</body') === false) {
+            return;
+        }
+
+        // Bail out early if Admin Bar has already been rendered and added to page markup.
+        // Note: this is the default behaviour since AdminBar 2.8.4, but if rendering duplicates is actually preferable
+        // duplicate detection can be disabled by unchecking the disable_duplicate_bars option in module configuration.
+        if ($this->disable_duplicate_bars && preg_match('/' . str_replace('%s', '.*?', preg_quote($this->getTemplates()['adminbar'], '/')) . '/', $event->return)) {
             return;
         }
 
@@ -797,6 +805,18 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
         $field = $this->modules->get('InputfieldCheckbox');
         $field->name = 'disable_for_debug_mode';
         $field->label = 'Disable Admin Bar when the site is in debug mode';
+        $field->value = 1;
+        $field->attr('checked', empty($data[$field->name]) ? '' : 'checked');
+        $fieldset->add($field);
+
+        // Disable AdminBar when duplicate bars are deteted?
+        $field = $this->modules->get('InputfieldCheckbox');
+        $field->name = 'disable_duplicate_bars';
+        $field->label = 'Disable Admin Bar when page markup already contains an Admin Bar (prevent duplicate bars)';
+        // $field->description = ';
+        $field->notes = 'As of AdminBar version 2.8.4 the module attempts to detect and prevent duplicate bars by default. If you prefer multiple bars to be rendered instead, uncheck this option.'
+            . ' '
+            . 'Please note that AdminBar doesn\'t officially support multiple simultaneous bars; disabling this option is not recommended, as it may result in unexpected issues.';
         $field->value = 1;
         $field->attr('checked', empty($data[$field->name]) ? '' : 'checked');
         $fieldset->add($field);

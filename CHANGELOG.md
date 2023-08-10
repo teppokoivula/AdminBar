@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.4] - 2023-08-11
+
+### Fixed
+- Fixed an issue where multiple AdminBars were being erroneously added to page content. This would happen e.g. in case one page rendered another page. This behaviour can be disabled via module config settings if, for some reason, duplicate bars are actually preferable.
+
 ## [2.8.3] - 2023-06-07
 
 ### Changed
