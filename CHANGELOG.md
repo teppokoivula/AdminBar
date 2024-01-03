@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.0] - 2024-01-03
+
+### Added
+- Added support for specifying the root content element with `data-adminbar-content` attribute. More details in README.md.
+
 ## [2.8.4] - 2023-08-11
 
 ### Fixed

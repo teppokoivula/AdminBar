@@ -23,17 +23,21 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.appendChild(adminbar_modal);
     }
 
-    // Make sure that our HTML element has proper padding and the modal element is properly
-    // positioned, and adjust HTML elements that have the data-adminbar-adjust attribute.
+    // Make sure that our outermost content container (html element or something else) has proper padding and the modal element is properly
+    // positioned, and adjust elements that have the data-adminbar-adjust attribute.
     if (adminbar.classList.contains('adminbar--auto-padding')) {
-        adjustPositions();
+        const adminbar_content_container = document.querySelector('[data-adminbar-content]') || document.documentElement;
+        if (!adminbar_content_container.hasAttribute('data-adminbar-content')) {
+            adminbar_content_container.setAttribute('data-adminbar-content', '');
+        }
+        adjustPositions(adminbar_content_container);
         let resize_timeout = false;
         window.addEventListener('resize', function(event) {
             window.clearTimeout(resize_timeout);
             resize_timeout = window.setTimeout(adjustPositions(), 150);
         });
-        function adjustPositions() {
-            document.documentElement.style.paddingTop = adminbar.offsetHeight + 'px';
+        function adjustPositions(adminbar_content_container) {
+            adminbar_content_container.style.paddingTop = adminbar.offsetHeight + 'px';
             if (!adminbar_modal.classList.contains('adminbar__modal--hidden')) {
                 adminbar_modal.style.top = adminbar.offsetHeight + 'px';
                 adminbar_modal.style.height = 'calc(100vh - ' + adminbar.offsetHeight + 'px)';

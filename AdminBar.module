@@ -5,7 +5,7 @@
  *
  * This module provides easy front-end admin bar for editing page content in ProcessWire.
  *
- * @copyright 2011-2022 @apeisa & Teppo Koivula
+ * @copyright 2011-2024 @apeisa & Teppo Koivula
  * @license https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt GNU General Public License, version 2
  */
 class AdminBar extends WireData implements Module, ConfigurableModule {
@@ -29,7 +29,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
             'title' => 'Admin Bar',
             'summary' => 'Fast and easy in-page content editing',
             'href' => 'https://processwire.com/modules/admin-bar/',
-            'version' => '2.8.4',
+            'version' => '2.9.0',
             'permanent' => false,
             'autoload' => true,
             'singular' => true,

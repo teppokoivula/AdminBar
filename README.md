@@ -102,6 +102,21 @@ at the time of calculation, the example above would result in...
 <div style="top: 100px; max-height: calc(100% - 100px);" data-adminbar-adjust="top max-height"></div>
 ```
 
+By default your main content container is assumed to be document root and Admin Bar will automatically
+add top padding to this element to make space for itself. In some cases content may live within another
+full height container, in which case you may prefer to adjust the padding of that element instead. This
+can be achieved by adding the `data-adminbar-content` attribute to said element:
+
+```
+<html>
+    <body>
+        <div class="main" data-adminbar-content>
+            ...
+        </div>
+    </body>
+</html>
+```
+
 ## License
 
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU

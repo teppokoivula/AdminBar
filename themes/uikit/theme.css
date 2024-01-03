@@ -6,7 +6,7 @@
  * @author Teppo Koivula (https://github.com/teppokoivula)
  */
 
-html {
+[data-adminbar-content] {
     padding-top: 50px;
 }
 
