@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.1] - 2024-01-09
+
+### Fixed
+- Fixed a JavaScript issue where AdminBar content container was sometimes undefined.
+
 ## [2.9.0] - 2024-01-03
 
 ### Added

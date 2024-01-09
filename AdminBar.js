@@ -26,7 +26,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Make sure that our outermost content container (html element or something else) has proper padding and the modal element is properly
     // positioned, and adjust elements that have the data-adminbar-adjust attribute.
     if (adminbar.classList.contains('adminbar--auto-padding')) {
-        const adminbar_content_container = document.querySelector('[data-adminbar-content]') || document.documentElement;
+        let adminbar_content_container = document.querySelector('[data-adminbar-content]')
+        if (typeof adminbar_content_container == 'undefined') {
+            adminbar_content_container = document.documentElement;
+        }
         if (!adminbar_content_container.hasAttribute('data-adminbar-content')) {
             adminbar_content_container.setAttribute('data-adminbar-content', '');
         }
