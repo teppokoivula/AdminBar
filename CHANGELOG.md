@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.2] - 2024-03-07
+
+### Fixed
+- Fixed a JavaScript issue where AdminBar attempted to access properties of null.
+
 ## [2.9.1] - 2024-01-09
 
 ### Fixed

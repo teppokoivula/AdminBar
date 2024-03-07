@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // positioned, and adjust elements that have the data-adminbar-adjust attribute.
     if (adminbar.classList.contains('adminbar--auto-padding')) {
         let adminbar_content_container = document.querySelector('[data-adminbar-content]')
-        if (typeof adminbar_content_container == 'undefined') {
+        if (typeof adminbar_content_container == 'undefined' || adminbar_content_container == null) {
             adminbar_content_container = document.documentElement;
         }
         if (!adminbar_content_container.hasAttribute('data-adminbar-content')) {
