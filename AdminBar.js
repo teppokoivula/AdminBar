@@ -35,9 +35,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         adjustPositions(adminbar_content_container);
         let resize_timeout = false;
-        window.addEventListener('resize', function(event) {
+        window.addEventListener('resize', () => {
             window.clearTimeout(resize_timeout);
-            resize_timeout = window.setTimeout(adjustPositions(), 150);
+            resize_timeout = window.setTimeout(adjustPositions(adminbar_content_container), 150);
         });
         function adjustPositions(adminbar_content_container) {
             adminbar_content_container.style.paddingTop = adminbar.offsetHeight + 'px';
