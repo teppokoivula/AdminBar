@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.4] - 2025-05-03
+
+### Added
+- Add support for optionally displaying save e.g. buttons in the head of the modal screen, just like they would be displayed when editing page directly, without the "modal" param. This feature is considered experimental.
+
 ## [2.9.3] - 2024-05-26
 
 ### Fixed
