@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.5] - 2025-05-03
+
+### Fixed
+- Detect DOM has already loaded when AdminBar JavaScript runs, in which case we don't want to wait any longer but rather execute our JavaScript right away.
+
 ## [2.9.4] - 2025-05-03
 
 ### Added

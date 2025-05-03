@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+const adminBarInit = function() {
 
     // Add the adminbar-loaded class to body element.
     document.body.classList.add('adminbar-loaded');
@@ -155,4 +155,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
     }
 
-}, false);
+}
+
+if (document.readyState !== 'loading') {
+    // The DOM is already ready, so we can run our code immediately.
+    adminBarInit();
+} else {
+    document.addEventListener('DOMContentLoaded', function() {
+        adminBarInit();
+    });
+}
