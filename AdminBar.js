@@ -7,7 +7,9 @@ const adminBarInit = function() {
     const adminbar = document.getElementById('adminbar');
     const settings = JSON.parse(adminbar.getAttribute('data-adminbar'));
     const adminbar_browse = adminbar.querySelector('.adminbar__link--item-browse');
-    adminbar_browse.parentNode.classList.add('adminbar__list-item--active');
+    if (adminbar_browse) {
+        adminbar_browse.parentNode.classList.add('adminbar__list-item--active');
+    }
 
     // Store references to items that have the data-adminbar property defined.
     const adminbar_adjust = document.querySelectorAll('[data-adminbar-adjust]');
@@ -103,10 +105,12 @@ const adminBarInit = function() {
     });
 
     // Attach click handler to the browse link.
-    adminbar_browse.addEventListener('click', function(event) {
-        slideUp(true);
-        return false;
-    });
+    if (adminbar_browse) {
+        adminbar_browse.addEventListener('click', function(event) {
+            slideUp(true);
+            return false;
+        });
+    }
 
     // Make a specific AdminBar link active, removing active state from all other links.
     function setActive(link) {
@@ -130,7 +134,9 @@ const adminBarInit = function() {
 
     // Slide modal window up.
     function slideUp(clean) {
-        setActive(adminbar_browse);
+        if (adminbar_browse) {
+            setActive(adminbar_browse);
+        }
         adminbar_modal.classList.remove('adminbar__modal--loading');
         if (clean) {
             adminbar_modal.querySelectorAll('iframe').forEach(function(item) {
