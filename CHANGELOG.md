@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.6] - 2025-12-02
+
+### Fixed
+- Fixed JavaScript issue occurring when browse button is not present in the AdminBar.
+
 ## [2.9.5] - 2025-05-03
 
 ### Fixed
