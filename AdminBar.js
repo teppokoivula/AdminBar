@@ -7,6 +7,13 @@ const adminBarInit = function() {
     const adminbar = document.getElementById('adminbar');
     const settings = JSON.parse(adminbar.getAttribute('data-adminbar'));
     const adminbar_browse = adminbar.querySelector('.adminbar__link--item-browse');
+
+    // Set CSS variable for adminbar height.
+    const setAdminbarHeight = () => {
+        document.documentElement.style.setProperty('--adminbar-height', adminbar.offsetHeight + 'px');
+    };
+    setAdminbarHeight();
+    window.addEventListener('resize', setAdminbarHeight);
     if (adminbar_browse) {
         adminbar_browse.parentNode.classList.add('adminbar__list-item--active');
     }
@@ -35,27 +42,22 @@ const adminBarInit = function() {
         if (!adminbar_content_container.hasAttribute('data-adminbar-content')) {
             adminbar_content_container.setAttribute('data-adminbar-content', '');
         }
-        adjustPositions(adminbar_content_container);
+        adminbar_content_container.style.paddingTop = 'var(--adminbar-height, 40px)';
+        adjustPositions();
         let resize_timeout = false;
         window.addEventListener('resize', () => {
             window.clearTimeout(resize_timeout);
-            resize_timeout = window.setTimeout(adjustPositions(adminbar_content_container), 150);
+            resize_timeout = window.setTimeout(adjustPositions, 150);
         });
-        function adjustPositions(adminbar_content_container) {
-            adminbar_content_container.style.paddingTop = adminbar.offsetHeight + 'px';
-            if (!adminbar_modal.classList.contains('adminbar__modal--hidden')) {
-                adminbar_modal.style.top = adminbar.offsetHeight + 'px';
-                adminbar_modal.style.height = 'calc(100vh - ' + adminbar.offsetHeight + 'px)';
-            }
+        function adjustPositions() {
             if (adminbar_adjust.length) {
                 adminbar_adjust.forEach(function(item) {
                     const props = item.getAttribute('data-adminbar-adjust').split(' ');
-                    const abofh = adminbar.offsetHeight + 'px';
                     if (props.indexOf('top') > -1) {
-                        item.style.top = abofh;
+                        item.style.top = 'var(--adminbar-height, 40px)';
                     }
                     if (props.indexOf('max-height') > -1) {
-                        item.style.maxHeight = 'calc(100% - ' + abofh + ')';
+                        item.style.maxHeight = 'calc(100% - var(--adminbar-height, 40px))';
                     }
                 });
             }

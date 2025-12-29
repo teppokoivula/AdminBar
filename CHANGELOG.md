@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.10.0] - 2025-12-29
+
+### Added
+- Added `--adminbar-height` CSS custom property on the `<html>` element, updated on resize. This allows site styles to account for AdminBar height, e.g., for `scroll-margin-top`.
+
+### Changed
+- AdminBar CSS and JavaScript now use `--adminbar-height` variable for modal positioning and element adjustments.
+
 ## [2.9.6] - 2025-12-02
 
 ### Fixed
