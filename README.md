@@ -85,6 +85,25 @@ the AdminBar module/class:
 
 ## Frontend utilities
 
+### CSS custom property
+
+AdminBar sets the `--adminbar-height` CSS custom property on the document root (`:root`). This
+allows you to adjust your layout based on the Admin Bar height using pure CSS:
+
+```css
+.sticky-header {
+    top: var(--adminbar-height, 0);
+}
+
+.full-height-container {
+    height: calc(100vh - var(--adminbar-height, 0));
+}
+```
+
+The value is updated automatically when the Admin Bar height changes (e.g., due to window resize).
+
+### data-adminbar-adjust attribute
+
 You can use the `data-adminbar-adjust` attribute to control behaviour of frontend elements while
 Admin Bar is enabled/displayed. This attribute should contain a space-separated list of CSS
 properties that should be modified when Admin Bar height is recalculated.
