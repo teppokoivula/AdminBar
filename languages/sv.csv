@@ -1,0 +1,11 @@
+en,sv,description,file,hash
+Browse,Visa,,site/modules/AdminBar/AdminBar.module,1b9abf135ccb7ed2f2cd9c155137c351
+Edit,Redigera,,site/modules/AdminBar/AdminBar.module,7dce122004969d56ae2e0245cb754d35
+New,Ny,,site/modules/AdminBar/AdminBar.module,03c2e7e41ffc181a4e84080b4710e81e
+Logout,Logga ut,,site/modules/AdminBar/AdminBar.module,0323de4f66a1700e2173e9bcdce02715
+Admin,Admin,,site/modules/AdminBar/AdminBar.module,e3afed0047b08059d0fada10f400c1e5
+Profile,Profil,,site/modules/AdminBar/AdminBar.module,cce99c598cfdb9773ab041d54c3d973a
+"This page is locked","Sidan är låst",,site/modules/AdminBar/AdminBar.module,bea587c6e017464cab1956682f13ee58
+"No editing rights","Inga redigeringsrättigheter",,site/modules/AdminBar/AdminBar.module,bd5e4dbb8f0157e02a17b5e4b937d098
+"%s moved to the trash.","%s flyttades till papperskorgen.",,site/modules/AdminBar/AdminBar.module,a46d5c11c00d0d1df7504e10b8f6da3e
+"%s saved succesfully.","%s sparades.",,site/modules/AdminBar/AdminBar.module,2049f18f9d75ff92438a31f97b58311d
