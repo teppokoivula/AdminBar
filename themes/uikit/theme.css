@@ -28,12 +28,15 @@
 }
 
 .adminbar__list-item--active,
+.adminbar__list-item:focus,
 .adminbar__list-item:hover {
     background: transparent;
 }
 
+.adminbar__button:focus::after,
 .adminbar__button:hover::after,
 .adminbar__list-item--active::after,
+.adminbar__list-item:focus::after,
 .adminbar__list-item:hover::after {
     content: "";
     display: block;
@@ -47,6 +50,11 @@
     left: 50%;
     margin-left: 6px;
     z-index: 99;
+}
+
+.adminbar__list-item--linkless:focus::after,
+.adminbar__list-item--linkless:hover::after {
+    display: none;
 }
 
 .adminbar__form,

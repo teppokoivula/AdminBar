@@ -5,7 +5,7 @@
  *
  * This module provides easy front-end admin bar for editing page content in ProcessWire.
  *
- * @copyright 2011-2024 @apeisa & Teppo Koivula
+ * @copyright 2011-2026 @apeisa & Teppo Koivula
  * @license https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt GNU General Public License, version 2
  */
 class AdminBar extends WireData implements Module, ConfigurableModule {
@@ -16,6 +16,13 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
      * @var bool
      */
     public static $showBar = true;
+
+    /**
+     * Available items
+     *
+     * @var array|null
+     */
+    protected $availableItems = null;
 
     /**
      * Basic information for this module
@@ -29,7 +36,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
             'title' => 'Admin Bar',
             'summary' => 'Fast and easy in-page content editing',
             'href' => 'https://processwire.com/modules/admin-bar/',
-            'version' => '2.11.0',
+            'version' => '2.12.0',
             'permanent' => false,
             'autoload' => true,
             'singular' => true,
@@ -424,9 +431,13 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
 
         // Add items.
         $items = $this->getItems($args);
-        foreach (['left', 'right'] as $list) {
-            $list_items = $items[$list] ?? [];
-            $out .= $this->renderList($list_items, $list, $templates);
+        foreach ($this->getColumns() as $column) {
+            $column_items = $items[$column] ?? [];
+            if (is_string($column_items)) {
+                $out .= $column_items;
+            } else {
+                $out .= $this->renderList($column_items, $column, $templates);
+            }
         }
 
         // Construct the data-adminbar attribute.
@@ -439,6 +450,18 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
 
         // Return final output.
         return sprintf($templates['adminbar'], $data, $out);
+    }
+
+    /**
+     * Return columns
+     *
+     * @return array
+     */
+    protected function ___getColumns(): array {
+        return [
+            'left',
+            'right',
+        ];
     }
 
     /**
@@ -487,7 +510,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
 
         // Wrap items with the list template.
         if (!empty($out)) {
-            $out = sprintf($templates['list__' . $list], $out);
+            $out = sprintf($templates['list__' . $list] ?? $templates['list'], $out);
         }
 
         return $out;
@@ -505,6 +528,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
     protected function ___getTemplates(): array {
         return [
             'adminbar' => '<div id="adminbar" data-adminbar=\'%s\' class="adminbar adminbar--auto-padding">%s</div>',
+            'list' => '<ul class="adminbar__list">%s</ul>',
             'list__left' => '<ul class="adminbar__list adminbar__list--left">%s</ul>',
             'list__right' => '<ul class="adminbar__list adminbar__list--right">%s</ul>',
             'list__children' => '<ul class="adminbar__list adminbar__list--children">%s</ul>',
@@ -547,7 +571,52 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
         $modal_class = $modal ? ' ' . ($args['classes']['link--modal'] ?? '') : '';
 
         // Available items.
-        $available_items = [
+		$this->setAvailableItems($args, $modal, $modal_class);
+        $available_items = $this->getAvailableItems();
+
+        // Array of items.
+        $items = [];
+        foreach ($this->getColumns() as $column) {
+            $column_items = $this->get('items_' . $column);
+            $items[$column] = array_filter(
+                array_combine(
+                    $column_items,
+                    array_map(function($value) use ($available_items) {
+                        return $available_items[$value] ?? null;
+                    }, $column_items)
+                )
+            );
+
+            // If page is non-editable, provide additional details.
+            if (in_array('edit', $column_items) && empty($items[$column]['edit'])) {
+                if (!$args['page']->editable()) {
+                    $items[$column]['edit'] = [
+                        'class' => 'edit adminbar__text--norights',
+                        'text' => $args['strings']['norights'],
+                    ];
+                } else if ($args['page']->is(Page::statusLocked)) {
+                    $items[$column]['edit'] = [
+                        'class' => 'edit adminbar__text--locked',
+                        'text' => $args['strings']['locked'],
+                    ];
+                }
+            }
+        }
+
+        return $items;
+    }
+
+    /**
+     * Set available items
+     *
+     * @param array $args Arguments.
+     * @param string $modal Modal query string.
+     * @param string $modal_class Modal CSS class.
+     */
+    protected function setAvailableItems(array $args, string $modal, string $modal_class) {
+
+        // Populate available items.
+        $this->availableItems = [
             'admin' => [
                 'class' => 'admin',
                 'link' => $this->config->urls->admin . 'page/?open=' . $args['page']->id,
@@ -587,45 +656,23 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
         ];
 
         // Add child items for the "user" dropdown menu.
-        $available_items['user']['children'] = array_filter(
+        $this->availableItems['user']['children'] = array_filter(
             array_combine(
                 $this->user_items,
-                array_map(function($value) use ($available_items) {
-                    return $available_items[$value] ?? null;
+                array_map(function($value) {
+                    return $this->availableItems[$value] ?? null;
                 }, $this->user_items)
             )
         );
+    }
 
-        // Array of items.
-        $items = [];
-        foreach (['left', 'right'] as $column) {
-            $column_items = $this->get('items_' . $column);
-            $items[$column] = array_filter(
-                array_combine(
-                    $column_items,
-                    array_map(function($value) use ($available_items) {
-                        return $available_items[$value] ?? null;
-                    }, $column_items)
-                )
-            );
-
-            // If page is non-editable, provide additional details.
-            if (in_array('edit', $column_items) && empty($items[$column]['edit'])) {
-                if (!$args['page']->editable()) {
-                    $items[$column]['edit'] = [
-                        'class' => 'edit adminbar__text--norights',
-                        'text' => $args['strings']['norights'],
-                    ];
-                } else if ($args['page']->is(Page::statusLocked)) {
-                    $items[$column]['edit'] = [
-                        'class' => 'edit adminbar__text--locked',
-                        'text' => $args['strings']['locked'],
-                    ];
-                }
-            }
-        }
-
-        return $items;
+    /**
+     * Get available items
+     *
+     * @return array|null
+     */
+    public function ___getAvailableItems(): ?array {
+        return $this->availableItems;
     }
 
     /**
@@ -773,7 +820,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
             'user' => 'user',
             'admin' => 'admin',
         ];
-        foreach (['left', 'right'] as $column) {
+        foreach ($this->getColumns() as $column) {
             $field = $this->modules->get('InputfieldAsmSelect');
             $field->name = 'items_' . $column;
             $field->label = ucfirst($column) . ' column';

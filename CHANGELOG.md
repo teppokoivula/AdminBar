@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.12.0] - 2026-01-29
+
+### Added
+- New hookable `AdminBar::getColumns()` method for customizing Admin Bar columns.
+- New hookable `AdminBar::getAvailableItems()` method for reading available items.
+- New generic `list` template as fallback for custom columns.
+- Support for string content in columns (in addition to arrays of items).
+
+### Changed
+- Improved accessibility with focus state styles in uikit theme.
+
 ## [2.11.0] - 2026-01-12
 
 ### Added
