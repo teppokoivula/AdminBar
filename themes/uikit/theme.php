@@ -33,7 +33,7 @@ $this->addHookAfter('AdminBar::getItems', function(HookEvent $event) {
                     $url = "https://www.gravatar.com/avatar/" . md5(strtolower(trim($user->email))) . "?s=48&d=mm&r=g";
                     $img = '<img class="adminbar__avatar" src="' . $url . '" alt="' . $user->name . '" />';
                     $item['text'] = $img . $item['text'];
-                } else if ($key == 'logout') {
+                } else if ($key == 'logout' && !empty($item['html'])) {
                     // Logout is a form, so icon needs some additional styles.
                     $item['html'] = preg_replace(
                         '/\<button.*?type="submit".*?\>/i',

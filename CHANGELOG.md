@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.12.1] - 2026-05-13
+
+### Fixed
+- uikit theme: avoid clobbering custom `logout` items that don't define an `html` key. The icon-injection branch assumed the default form/button markup; when a hook supplied a `link`/`text`-only logout item, `preg_replace` wrote an empty string back into `$item['html']`, causing the item to render as a non-link `<span>`.
+
 ## [2.12.0] - 2026-01-29
 
 ### Added
