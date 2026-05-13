@@ -59,8 +59,10 @@ $this->addHookAfter('AdminBar::getItems', function(HookEvent $event) {
         // array_walk.
         foreach ($items as $key => $column) {
             if ($has_icons == 30 || ($key == 'left' && $has_icons == 10) || ($key == 'right' && $has_icons == 20)) {
-                array_walk($column, $add_icons);
-                $items[$key] = $column;
+                if (is_array($column)) {
+                    array_walk($column, $add_icons);
+                    $items[$key] = $column;
+                }
             }
         }
     }

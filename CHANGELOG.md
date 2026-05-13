@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.12.2] - 2026-05-13
+
+### Fixed
+- uikit theme: add `is_array()` check before `array_walk()` to prevent PHP warning when a column value is a string (e.g., the logo HTML) instead of an array.
+
 ## [2.12.1] - 2026-05-13
 
 ### Fixed
