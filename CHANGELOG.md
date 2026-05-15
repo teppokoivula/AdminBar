@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.13.0] - 2026-05-15
+
+### Added
+- Support for custom icons via the `icon` property on items. Pass an icon name (e.g., `calendar`) or raw SVG/HTML markup (starting with `<`).
+- New hookable `___getIcon()` method for customizing icon lookup.
+
 ## [2.12.2] - 2026-05-13
 
 ### Fixed

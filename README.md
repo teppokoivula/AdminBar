@@ -83,6 +83,38 @@ the AdminBar module/class:
   method and modifying the args array – or if you want to modify the displayed items, you can hook
   _after_ this method and modify the returned array of items.
 
+## Custom icons
+
+You can add icons to Admin Bar items by including an `icon` property. This can be either an icon
+name or raw SVG/HTML markup:
+
+```php
+$wire->addHookAfter('AdminBar::getItems', function(HookEvent $event) {
+    $items = $event->return;
+
+    // Using an icon name (resolved via getIcon method)
+    $items['right']['events'] = [
+        'class' => 'events',
+        'link' => '/admin/page/?id=1234',
+        'text' => 'Events',
+        'icon' => 'calendar',
+    ];
+
+    // Using raw SVG markup
+    $items['right']['custom'] = [
+        'class' => 'custom',
+        'link' => '/custom/',
+        'text' => 'Custom',
+        'icon' => '<svg class="adminbar__icon" ...>...</svg>',
+    ];
+
+    $event->return = $items;
+});
+```
+
+Icon names are resolved via the hookable `___getIcon()` method. Hook after this method to register
+your own icon names.
+
 ## Frontend utilities
 
 ### CSS custom property

@@ -36,7 +36,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
             'title' => 'Admin Bar',
             'summary' => 'Fast and easy in-page content editing',
             'href' => 'https://processwire.com/modules/admin-bar/',
-            'version' => '2.12.2',
+            'version' => '2.13.0',
             'permanent' => false,
             'autoload' => true,
             'singular' => true,
@@ -493,6 +493,15 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
                 if (isset($item['class']) && $list == 'children') {
                     $item['class'] .= ' adminbar__' . $item_type . '--child';
                 }
+                if (!empty($item['icon']) && !empty($item['text'])) {
+                    $icon = $item['icon'];
+                    if (strpos($icon, '<') !== 0) {
+                        $icon = $this->getIcon($icon);
+                    }
+                    if ($icon) {
+                        $item['text'] = $icon . $item['text'];
+                    }
+                }
                 $item_content = vsprintf(
                     $templates[$item_type],
                     $item
@@ -514,6 +523,19 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
         }
 
         return $out;
+    }
+
+    /**
+     * Return icon markup by name
+     *
+     * This method returns icon markup for a given icon name. By default no icons are registered.
+     * Hook after this method to add your own icon names.
+     *
+     * @param string $name Icon name.
+     * @return string|null Icon markup or null if icon not found.
+     */
+    protected function ___getIcon(string $name): ?string {
+        return null;
     }
 
     /**
