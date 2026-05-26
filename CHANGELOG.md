@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.14.0] - 2026-05-26
+
+### Added
+- New `renderWithAssets()` method that returns AdminBar markup with CSS/JS includes.
+- Support for rendering without page context (pass `'page' => null` to hide page-specific items).
+
 ## [2.13.0] - 2026-05-15
 
 ### Added

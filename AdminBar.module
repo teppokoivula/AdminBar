@@ -36,7 +36,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
             'title' => 'Admin Bar',
             'summary' => 'Fast and easy in-page content editing',
             'href' => 'https://processwire.com/modules/admin-bar/',
-            'version' => '2.13.0',
+            'version' => '2.14.0',
             'permanent' => false,
             'autoload' => true,
             'singular' => true,
@@ -318,7 +318,35 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
             return;
         }
 
-        // Placeholder for output.
+        $out = $this->renderWithAssets(['page' => $page]);
+
+        // Page was saved in modal window, notify the user about what happened.
+        if ($this->session->AB_pageSaved) {
+            $out .= vsprintf('<div id="adminbar-page-saved" class="adminbar__page-saved adminbar__page-saved--%s">%s</div>',
+                $this->session->AB_pageRemove ? ['removed', sprintf($this->_("%s moved to the trash."), $this->session->AB_pageRemove)]
+                                              : ['saved', sprintf($this->_("%s saved succesfully."), $page->title)]
+            );
+            $this->session->remove('AB_pageSaved');
+            $this->session->remove('AB_pageRemove');
+        } else {
+            $this->session->remove('AB_pageSaved');
+            $this->session->remove('AB_pageRemove');
+        }
+
+        // Finally add Admin Bar markup to end of the page HTML source.
+        $event->return = str_ireplace('</body>', $out . '</body>', $event->return);
+    }
+
+    /**
+     * Render Admin Bar with CSS/JS assets included
+     *
+     * Use this method when you need to inject AdminBar into HTML that wasn't
+     * rendered through ProcessWire's normal page render (e.g., proxied content).
+     *
+     * @param array $args Render arguments (same as render())
+     * @return string Complete AdminBar HTML with CSS/JS
+     */
+    public function renderWithAssets(array $args = []): string {
         $out = '';
 
         // Get paths, URLs, and version for styles and scripts.
@@ -359,25 +387,9 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
         }
 
         // Create markup for Admin Bar.
-        $out .= $this->render([
-            'page' => $page,
-        ]);
+        $out .= $this->render($args);
 
-        // Page was saved in modal window, notify the user about what happened.
-        if ($this->session->AB_pageSaved) {
-            $out .= vsprintf('<div id="adminbar-page-saved" class="adminbar__page-saved adminbar__page-saved--%s">%s</div>',
-                $this->session->AB_pageRemove ? ['removed', sprintf($this->_("%s moved to the trash."), $this->session->AB_pageRemove)]
-                                              : ['saved', sprintf($this->_("%s saved succesfully."), $page->title)]
-            );
-            $this->session->remove('AB_pageSaved');
-            $this->session->remove('AB_pageRemove');
-        } else {
-            $this->session->remove('AB_pageSaved');
-            $this->session->remove('AB_pageRemove');
-        }
-
-        // Finally add Admin Bar markup to end of the page HTML source.
-        $event->return = str_ireplace('</body>', $out . '</body>', $event->return);
+        return $out;
     }
 
     /**
@@ -416,7 +428,7 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
         ], $args);
 
         // If only one template is allowed, we show it's label or name instead of default "page".
-        if (empty($args['template_title']) && count($args['page']->template->childTemplates) == 1) {
+        if (empty($args['template_title']) && $args['page'] && $args['page']->id && count($args['page']->template->childTemplates) == 1) {
             $child_template_ids = array_values($args['page']->template->childTemplates);
             $child_template_id = array_pop($child_template_ids);
             $child_template = $this->templates->get((int) $child_template_id);
@@ -610,13 +622,14 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
             );
 
             // If page is non-editable, provide additional details.
-            if (in_array('edit', $column_items) && empty($items[$column]['edit'])) {
-                if (!$args['page']->editable()) {
+            $page = $args['page'] ?? null;
+            if ($page && $page->id && in_array('edit', $column_items) && empty($items[$column]['edit'])) {
+                if (!$page->editable()) {
                     $items[$column]['edit'] = [
                         'class' => 'edit adminbar__text--norights',
                         'text' => $args['strings']['norights'],
                     ];
-                } else if ($args['page']->is(Page::statusLocked)) {
+                } else if ($page->is(Page::statusLocked)) {
                     $items[$column]['edit'] = [
                         'class' => 'edit adminbar__text--locked',
                         'text' => $args['strings']['locked'],
@@ -637,11 +650,14 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
      */
     protected function setAvailableItems(array $args, string $modal, string $modal_class) {
 
+        $page = $args['page'] ?? null;
+        $has_page = $page && $page->id;
+
         // Populate available items.
         $this->availableItems = [
             'admin' => [
                 'class' => 'admin',
-                'link' => $this->config->urls->admin . 'page/?open=' . $args['page']->id,
+                'link' => $this->config->urls->admin . 'page/' . ($has_page ? '?open=' . $page->id : ''),
                 'text' => $args['strings']['admin'],
             ],
             'profile' => [
@@ -655,19 +671,19 @@ class AdminBar extends WireData implements Module, ConfigurableModule {
                         . '<button class="adminbar__button" type="submit">' . $args['strings']['logout'] . '</button>'
                         . '</form>',
             ],
-            'browse' => [
+            'browse' => $has_page ? [
                 'class' => 'browse',
                 'link' => '#',
                 'text' => $args['strings']['browse'],
-            ],
-            'edit' => $args['page']->editable() && !$args['page']->is(Page::statusLocked) ? [
+            ] : null,
+            'edit' => $has_page && $page->editable() && !$page->is(Page::statusLocked) ? [
                 'class' => 'edit' . $modal_class,
-                'link' => $this->config->urls->admin . 'page/edit/?id=' . $args['page']->id . ($modal ? '&' . $modal : ''),
+                'link' => $this->config->urls->admin . 'page/edit/?id=' . $page->id . ($modal ? '&' . $modal : ''),
                 'text' => $args['strings']['edit'],
             ] : null,
-            'new' => $args['page']->addable() ? [
+            'new' => $has_page && $page->addable() ? [
                 'class' => 'new' . $modal_class,
-                'link' => $this->config->urls->admin . 'page/add/?parent_id=' . $args['page']->id . ($modal ? '&' . $modal : ''),
+                'link' => $this->config->urls->admin . 'page/add/?parent_id=' . $page->id . ($modal ? '&' . $modal : ''),
                 'text' => $args['strings']['new'] . ' ' . $args['template_title'],
             ] : null,
             'user' => [

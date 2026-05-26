@@ -115,6 +115,29 @@ $wire->addHookAfter('AdminBar::getItems', function(HookEvent $event) {
 Icon names are resolved via the hookable `___getIcon()` method. Hook after this method to register
 your own icon names.
 
+## Injecting AdminBar into external content
+
+If you need to inject AdminBar into HTML that wasn't rendered through ProcessWire (e.g., proxied or
+cached content), use the `renderWithAssets()` method:
+
+```php
+$adminBar = $modules->get('AdminBar');
+if ($adminBar->isEnabled()) {
+    $html = str_ireplace(
+        '</body>',
+        $adminBar->renderWithAssets(['page' => $page]) . '</body>',
+        $html
+    );
+}
+```
+
+This method returns complete AdminBar markup including CSS and JavaScript. You can pass `null` as the
+page to render AdminBar without page-specific items (edit, new, browse):
+
+```php
+$adminBar->renderWithAssets(['page' => null])
+```
+
 ## Frontend utilities
 
 ### CSS custom property
